@@ -7,6 +7,14 @@
       "owner": "chief-of-staff",
       "status": "active",
       "created_at": "2026-11-06T14:53:18.650Z"
+    },
+    {
+      "id": "market-intel",
+      "title": "Inteligência de mercado do CoFind",
+      "goal": "Entender concorrência e oportunidades na Espanha",
+      "owner": "chief-of-staff",
+      "status": "active",
+      "created_at": "2026-11-06T16:48:45.232Z"
     }
   ]
 }

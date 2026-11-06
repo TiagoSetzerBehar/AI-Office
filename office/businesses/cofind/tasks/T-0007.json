@@ -1,0 +1,78 @@
+{
+  "id": "T-0007",
+  "business": "cofind",
+  "project": "market-intel",
+  "parent": "T-0006",
+  "depth": 1,
+  "title": "Mapear e comparar concorrentes de networking para empreendedores na Espanha",
+  "description": "CoFind: plataforma de networking para empreendedores na Espanha; no futuro, conectar empreendedores a investidores (ver context.md; estágio, modelo de receita e cidades ainda não confirmados). Mapear: (a) concorrentes diretos (apps/plataformas de networking/matchmaking de empreendedores e cofundadores que operam na Espanha), (b) indiretos (LinkedIn, comunidades e eventos de startups, aceleradoras/associações com rede de membros, plataformas de conexão com investidores). Para cada um: o que oferece, público, modelo de receita, presença na Espanha, pontos fortes/fracos — com fonte. Entregar deliverables/T-0007/competitors.md com: resumo executivo (≤10 linhas, linguagem simples), tabela comparativa (máx. ~12 players), lacunas e oportunidades para o CoFind, riscos, e o que precisa ser validado. Limite de esforço: no máximo ~15 buscas na web; priorize qualidade das fontes. Se a busca na web não funcionar, diga claramente e marque a análise como NÃO verificada.",
+  "acceptance_criteria": [
+    "competitors.md com resumo, tabela, oportunidades, riscos e fontes com data"
+  ],
+  "assignee": "director-strategy",
+  "created_by": "chief-of-staff",
+  "status": "done",
+  "external_action": false,
+  "requires_approval": false,
+  "revisions": 0,
+  "quality_gate": null,
+  "quality_checks": [],
+  "deliverables": [
+    {
+      "path": "office/businesses/cofind/deliverables/T-0007/competitors.md",
+      "sha256": "8f1212bea54ad90989bf4ad7c9bc0b2736eabee0c25a2aca85a2748d637fe16f",
+      "summary": "Mapa de concorrentes (12 players), lacunas, riscos e validações",
+      "by": "director-strategy",
+      "at": "2026-11-06T16:49:57.274Z"
+    }
+  ],
+  "thread": [
+    {
+      "at": "2026-11-06T16:52:31.215Z",
+      "from": "chief-of-staff",
+      "to": "director-strategy",
+      "body": "Verificado pelo CoS: 12 players com fonte e data, fatos vs hipóteses separados, limitações declaradas. Aceito."
+    }
+  ],
+  "approval": null,
+  "history": [
+    {
+      "at": "2026-11-06T16:48:45.467Z",
+      "by": "chief-of-staff",
+      "type": "created",
+      "assignee": "director-strategy"
+    },
+    {
+      "at": "2026-11-06T16:48:55.292Z",
+      "by": "director-strategy",
+      "type": "status",
+      "from": "pending",
+      "to": "in_progress",
+      "note": ""
+    },
+    {
+      "at": "2026-11-06T16:49:57.274Z",
+      "by": "director-strategy",
+      "type": "deliverable",
+      "path": "office/businesses/cofind/deliverables/T-0007/competitors.md"
+    },
+    {
+      "at": "2026-11-06T16:49:57.360Z",
+      "by": "director-strategy",
+      "type": "status",
+      "from": "in_progress",
+      "to": "review",
+      "note": ""
+    },
+    {
+      "at": "2026-11-06T16:52:31.249Z",
+      "by": "chief-of-staff",
+      "type": "status",
+      "from": "review",
+      "to": "done",
+      "note": "análise verificada"
+    }
+  ],
+  "created_at": "2026-11-06T16:48:45.467Z",
+  "updated_at": "2026-11-06T16:52:31.249Z"
+}

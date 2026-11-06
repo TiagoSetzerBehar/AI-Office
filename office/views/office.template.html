@@ -1,0 +1,323 @@
+<title>Escritório AI Office</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: cena 3D em tela cheia; cabeçalho flutuante no topo; ficha do funcionário à direita (embaixo no celular). Visual único, noturno. */
+:root {
+  --ink: #0f1419;          /* fundo da noite no escritório */
+  --panel: rgba(22, 28, 36, 0.92);
+  --line: rgba(214, 196, 160, 0.18);
+  --text: #ece6da;
+  --muted: #a39b8c;
+  --brass: #d6b26e;        /* acento: latão das placas das salas */
+  --ok: #6fbf8e; --warn: #e3b75c; --bad: #e0705f; --idle: #8b93a1;
+  --display: "Fraunces", Georgia, serif;
+  --body: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--ink); color: var(--text); font-family: var(--body); overflow: hidden; }
+#scene { position: fixed; inset: 0; display: block; width: 100%; height: 100%; touch-action: none; }
+header {
+  position: fixed; top: calc(env(safe-area-inset-top, 0px) + 12px);
+  left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; pointer-events: none;
+}
+header h1 { font-family: var(--display); font-weight: 600; font-size: 1.35rem; margin: 0; letter-spacing: 0.01em; }
+header .meta { font-size: 0.78rem; color: var(--muted); font-family: var(--mono); }
+.hint { position: fixed; bottom: calc(env(safe-area-inset-bottom, 0px) + 12px); left: max(16px, env(safe-area-inset-left, 0px));
+  font-size: 0.78rem; color: var(--muted); pointer-events: none; }
+.tag { position: absolute; transform: translate(-50%, -100%); pointer-events: auto; cursor: pointer;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 4px 7px 5px;
+  min-width: 92px; text-align: left; color: var(--text); font: 500 0.7rem/1.2 var(--body); }
+.tag:focus-visible, .close:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+.tag .who { display: block; white-space: nowrap; }
+.tag .bar, .card .bar { height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-top: 4px; overflow: hidden; }
+.tag .bar i, .card .bar i { display: block; height: 100%; border-radius: 3px; background: var(--c, var(--ok)); }
+.tag.sel { border-color: var(--brass); }
+.card { position: fixed; z-index: 5; background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  right: max(16px, env(safe-area-inset-right, 0px)); top: calc(env(safe-area-inset-top, 0px) + 64px);
+  width: min(340px, calc(100% - 32px)); padding: 16px 18px; backdrop-filter: blur(6px); }
+.card h2 { font-family: var(--display); font-weight: 600; font-size: 1.15rem; margin: 0 28px 2px 0; text-wrap: balance; }
+.card .role { color: var(--muted); font-size: 0.82rem; }
+.card .pill { display: inline-block; margin-top: 10px; font: 500 0.68rem var(--mono); letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 3px 7px; border-radius: 4px; color: var(--ink); background: var(--c, var(--idle)); }
+.card .now { margin-top: 12px; font-size: 0.9rem; line-height: 1.4; }
+.card .pct { display: flex; justify-content: space-between; font: 500 0.75rem var(--mono); color: var(--muted); margin-top: 10px; font-variant-numeric: tabular-nums; }
+.card .bar { height: 8px; }
+.card ul { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 6px; border-top: 1px solid var(--line); padding-top: 12px; }
+.card li { display: grid; grid-template-columns: 56px 1fr; gap: 8px; font-size: 0.8rem; color: var(--muted); }
+.card li b { font: 500 0.72rem var(--mono); color: var(--text); font-weight: 500; }
+.card li span { min-width: 0; }
+.card .note { margin-top: 12px; font-size: 0.78rem; color: var(--muted); line-height: 1.4; }
+.close { position: absolute; top: 10px; right: 10px; width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--line);
+  background: transparent; color: var(--text); cursor: pointer; font-size: 1rem; line-height: 1; }
+@media (max-width: 640px) {
+  .card { top: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 12px); left: max(16px, env(safe-area-inset-left, 0px)); width: auto; max-height: 52%; overflow-y: auto; }
+  header h1 { font-size: 1.1rem; }
+}
+@media (prefers-reduced-motion: reduce) { .tag { transition: none; } }
+</style>
+
+<canvas id="scene" aria-label="Escritório 3D da AI Office"></canvas>
+<header>
+  <h1>AI Office · CoFind</h1>
+  <span class="meta" id="meta"></span>
+</header>
+<div id="tags"></div>
+<aside class="card" id="card" hidden aria-live="polite"></aside>
+<p class="hint">Toque num funcionário para ver o trabalho dele · arraste para girar · pinça ou roda para aproximar</p>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+const DATA = __DATA__;
+
+// ---------- leitura dos dados reais ----------
+const WEIGHT = { pending: 10, in_progress: 50, blocked: 50, changes_requested: 40, review: 85, awaiting_approval: 92, done: 100, rejected: 100, cancelled: 100 };
+const LABEL = { pending: 'na fila', in_progress: 'trabalhando', blocked: 'bloqueado', changes_requested: 'ajustando', review: 'em revisão',
+  awaiting_approval: 'esperando você', done: 'concluído', rejected: 'rejeitado', cancelled: 'cancelado', idle: 'disponível', planned: 'em breve' };
+const COLOR = { in_progress: '--warn', changes_requested: '--warn', review: '--warn', awaiting_approval: '--brass', blocked: '--bad', pending: '--idle', done: '--ok', idle: '--idle', planned: '--idle' };
+const OPEN = (s) => !['done', 'rejected', 'cancelled'].includes(s);
+
+function workOf(agent) {
+  const mine = DATA.tasks.filter((t) => t.assignee === agent.id).sort((a, b) => a.id.localeCompare(b.id));
+  if (agent.status !== 'active') return { state: 'planned', pct: 0, mine, current: null };
+  const open = mine.filter((t) => OPEN(t.status));
+  const current = open.at(-1) || null;
+  if (current) return { state: current.status, pct: WEIGHT[current.status], mine, current };
+  return { state: 'idle', pct: mine.length ? 100 : 0, mine, current: null, last: mine.at(-1) };
+}
+
+// ---------- cena ----------
+const canvas = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#0f1419');
+scene.fog = new THREE.Fog('#0f1419', 38, 70);
+const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 200);
+camera.position.set(0, 24, 30);
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.target.set(0, 0, -2);
+controls.enableDamping = true;
+controls.maxPolarAngle = Math.PI * 0.44;
+controls.minDistance = 10; controls.maxDistance = 55;
+
+scene.add(new THREE.HemisphereLight('#fff4e0', '#1d2430', 0.55));
+const sun = new THREE.DirectionalLight('#ffe7c2', 0.9);
+sun.position.set(12, 26, 14); sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -26, right: 26, top: 26, bottom: -26 });
+scene.add(sun);
+
+const mat = (c, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.7, ...o });
+const M = {
+  floor: mat('#5a4535', { roughness: 0.85 }), carpet: mat('#2c3440', { roughness: 0.95 }), plannedCarpet: mat('#23272e', { roughness: 1 }),
+  wall: mat('#d9d2c3', { roughness: 0.9 }), glass: mat('#9fc3d6', { transparent: true, opacity: 0.18, roughness: 0.1 }),
+  desk: mat('#8a6a4a', { roughness: 0.55 }), deskDark: mat('#3b3f46'), screenOff: mat('#14181e', { roughness: 0.3 }),
+  skin: mat('#c99a78'), shirt: mat('#f2efe8'), suit: mat('#262b33', { roughness: 0.6 }), shoe: mat('#121417'), chair: mat('#1d2127'),
+  plant: mat('#3f7a52'), pot: mat('#b07a52'), brass: mat('#d6b26e', { metalness: 0.6, roughness: 0.35 }),
+};
+const box = (w, h, d, m) => { const g = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); g.castShadow = g.receiveShadow = true; return g; };
+
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), M.floor);
+floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+
+// salas: Chief of Staff na frente; departamentos ativos no meio; planejados ao fundo
+const DEPT_TIE = { operations: '#c0563f', automation: '#3f7fc0', strategy: '#7a5bb5', finance: '#3f9a6e', commercial: '#c08a3f', marketing: '#c04f86' };
+const ROOMS = [];
+const deps = DATA.departments;
+const active = deps.filter((d) => d.status === 'active'), planned = deps.filter((d) => d.status !== 'active');
+ROOMS.push({ id: 'cos', name: 'Chief of Staff', x: 0, z: 9, w: 12, d: 7, active: true, tie: '#d6b26e' });
+active.forEach((d, i) => ROOMS.push({ id: d.id, name: d.name, x: (i - 1) * 13, z: -1, w: 12, d: 9, active: true, tie: DEPT_TIE[d.id] }));
+planned.forEach((d, i) => ROOMS.push({ id: d.id, name: d.name, x: (i - 1) * 13, z: -12, w: 12, d: 8, active: false, tie: DEPT_TIE[d.id] }));
+
+function signTexture(text, sub, dim) {
+  const c = document.createElement('canvas'); c.width = 1024; c.height = 192;
+  const g = c.getContext('2d');
+  g.fillStyle = dim ? '#1b1f25' : '#20262e'; g.fillRect(0, 0, 1024, 192);
+  g.strokeStyle = dim ? '#5c5a55' : '#d6b26e'; g.lineWidth = 6; g.strokeRect(8, 8, 1008, 176);
+  g.fillStyle = dim ? '#8a857b' : '#ece6da'; g.font = '600 64px Fraunces, Georgia, serif'; g.textBaseline = 'middle';
+  g.fillText(text, 40, sub ? 78 : 96);
+  if (sub) { g.fillStyle = dim ? '#77736b' : '#d6b26e'; g.font = '500 34px "JetBrains Mono", monospace'; g.fillText(sub, 42, 146); }
+  const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; return t;
+}
+
+function buildRoom(r) {
+  const grp = new THREE.Group(); grp.position.set(r.x, 0, r.z);
+  const carpet = new THREE.Mesh(new THREE.PlaneGeometry(r.w - 0.4, r.d - 0.4), r.active ? M.carpet : M.plannedCarpet);
+  carpet.rotation.x = -Math.PI / 2; carpet.position.y = 0.01; carpet.receiveShadow = true; grp.add(carpet);
+  const wallH = 1.6;
+  const back = box(r.w, wallH, 0.2, M.wall); back.position.set(0, wallH / 2, -r.d / 2); grp.add(back);
+  [-1, 1].forEach((s) => { const side = box(0.2, wallH, r.d, M.wall); side.position.set(s * r.w / 2, wallH / 2, 0); grp.add(side); });
+  const glass = new THREE.Mesh(new THREE.BoxGeometry(r.w, 1.1, 0.06), M.glass); glass.position.set(0, 0.55, r.d / 2); grp.add(glass);
+  const sign = new THREE.Mesh(new THREE.PlaneGeometry(5.2, 0.975), new THREE.MeshBasicMaterial({ map: signTexture(r.name, r.active ? null : 'em breve', !r.active) }));
+  sign.position.set(0, wallH + 0.6, -r.d / 2 + 0.11); grp.add(sign);
+  const plant = new THREE.Group();
+  const pot = box(0.5, 0.5, 0.5, M.pot); pot.position.y = 0.25; plant.add(pot);
+  const leaves = new THREE.Mesh(new THREE.IcosahedronGeometry(0.55, 1), M.plant); leaves.position.y = 0.95; leaves.castShadow = true; plant.add(leaves);
+  plant.position.set(r.w / 2 - 0.8, 0, -r.d / 2 + 0.8); grp.add(plant);
+  scene.add(grp); r.group = grp; return grp;
+}
+
+function desk(parent, x, z, tie, lit) {
+  const d = new THREE.Group(); d.position.set(x, 0, z);
+  const top = box(2.4, 0.1, 1.2, M.desk); top.position.y = 0.9; d.add(top);
+  [-1, 1].forEach((s) => { const leg = box(0.08, 0.9, 1.1, M.deskDark); leg.position.set(s * 1.1, 0.45, 0); d.add(leg); });
+  const screenMat = lit ? new THREE.MeshStandardMaterial({ color: '#1c2a38', emissive: new THREE.Color(tie), emissiveIntensity: 0.35, roughness: 0.3 }) : M.screenOff;
+  const mon = box(1.1, 0.65, 0.05, screenMat); mon.position.set(0, 1.3, 0.35); d.add(mon);
+  const stand = box(0.08, 0.3, 0.08, M.deskDark); stand.position.set(0, 1.05, 0.35); d.add(stand);
+  const chair = box(0.8, 0.12, 0.8, M.chair); chair.position.set(0, 0.55, -0.95); d.add(chair);
+  const chairBack = box(0.8, 0.9, 0.1, M.chair); chairBack.position.set(0, 1.0, -1.35); d.add(chairBack);
+  parent.add(d); return { group: d, screen: screenMat };
+}
+
+// funcionário de terno: pernas, paletó, camisa, gravata na cor do departamento, braços e cabeça
+function person(tie) {
+  const p = new THREE.Group();
+  const tieMat = mat(tie, { roughness: 0.5 });
+  [-0.17, 0.17].forEach((x) => { const thigh = box(0.24, 0.22, 0.62, M.suit); thigh.position.set(x, 0.68, -0.2); p.add(thigh);
+    const shin = box(0.22, 0.6, 0.22, M.suit); shin.position.set(x, 0.33, -0.48); p.add(shin);
+    const shoe = box(0.24, 0.1, 0.36, M.shoe); shoe.position.set(x, 0.05, -0.55); p.add(shoe); });
+  const torso = box(0.7, 0.85, 0.42, M.suit); torso.position.set(0, 1.2, 0.05); p.add(torso);
+  const shirt = box(0.24, 0.5, 0.02, M.shirt); shirt.position.set(0, 1.37, -0.17); p.add(shirt);
+  const tieM = box(0.09, 0.42, 0.02, tieMat); tieM.position.set(0, 1.33, -0.185); p.add(tieM);
+  const arms = [];
+  [-1, 1].forEach((s) => { const arm = new THREE.Group(); arm.position.set(s * 0.43, 1.55, 0.05);
+    const a = box(0.18, 0.62, 0.2, M.suit); a.position.y = -0.3; arm.add(a);
+    const hand = box(0.14, 0.14, 0.14, M.skin); hand.position.y = -0.65; arm.add(hand);
+    arm.rotation.x = -0.9; p.add(arm); arms.push(arm); });
+  const neck = box(0.14, 0.12, 0.14, M.skin); neck.position.y = 1.68; p.add(neck);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.26, 24, 18), M.skin); head.position.y = 1.92; head.castShadow = true; p.add(head);
+  const hair = new THREE.Mesh(new THREE.SphereGeometry(0.27, 24, 12, 0, Math.PI * 2, 0, Math.PI * 0.5), mat('#2a1f18'));
+  hair.position.y = 1.95; head.add(hair); hair.position.set(0, 0.03, 0.01);
+  return { group: p, arms, head };
+}
+
+ROOMS.forEach(buildRoom);
+
+// coloca cada funcionário na sua sala
+const AGENT_ROOM = (a) => (a.role === 'chief_of_staff' ? 'cos' : a.department);
+const people = [];
+const clickable = [];
+for (const r of ROOMS) {
+  const staff = DATA.agents.filter((a) => AGENT_ROOM(a) === r.id && (a.status === 'active' || a.role === 'director'));
+  const slots = staff.length || 1;
+  staff.forEach((a, i) => {
+    const w = workOf(a);
+    const x = slots === 1 ? 0 : (i - (slots - 1) / 2) * 4.4;
+    const z = r.d / 2 - 2.6;
+    const working = ['in_progress', 'changes_requested', 'review'].includes(w.state);
+    const dk = desk(r.group, x, z, r.tie, a.status === 'active');
+    if (a.status !== 'active') return; // planejado: mesa vazia
+    const pp = person(r.tie);
+    pp.group.position.set(x, 0, z - 0.95); pp.group.rotation.y = Math.PI;
+    r.group.add(pp.group);
+    pp.group.traverse((m) => { if (m.isMesh) { m.userData.agent = a.id; clickable.push(m); } });
+    people.push({ agent: a, work: w, working, ...pp, phase: Math.random() * 6, room: r });
+  });
+}
+
+// ---------- etiquetas com barra de progresso ----------
+const tagsEl = document.getElementById('tags');
+const tags = people.map((p) => {
+  const el = document.createElement('button');
+  el.className = 'tag'; el.type = 'button';
+  const c = COLOR[p.work.state] || '--idle';
+  el.style.setProperty('--c', `var(${c})`);
+  const SHORT = { 'chief-of-staff': 'Chief of Staff', 'director-operations': 'Operações', 'director-automation': 'Automação', 'director-strategy': 'Estratégia', 'code-reviewer': 'Revisor' };
+  const short = SHORT[p.agent.id] || p.agent.name;
+  const rev = p.agent.id === 'code-reviewer' && !p.work.mine.length;
+  el.innerHTML = rev ? `<span class="who">${short} · ${DATA.reviews || 0} revisões</span>`
+    : `<span class="who">${short} · ${p.work.state === 'idle' ? 'livre' : p.work.pct + '%'}</span><span class="bar"><i style="width:${p.work.pct}%"></i></span>`;
+  el.setAttribute('aria-label', `${p.agent.name}: ${LABEL[p.work.state]}, ${p.work.pct}%`);
+  el.addEventListener('click', () => select(p.agent.id));
+  tagsEl.appendChild(el);
+  return { el, p };
+});
+
+const card = document.getElementById('card');
+const esc = (s) => String(s).replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+function select(id) {
+  const p = people.find((x) => x.agent.id === id);
+  tags.forEach((t) => t.el.classList.toggle('sel', t.p.agent.id === id));
+  if (!p) { card.hidden = true; return; }
+  const { agent: a, work: w } = p;
+  const c = COLOR[w.state] || '--idle';
+  const doneN = w.mine.filter((t) => t.status === 'done').length;
+  const dep = DATA.departments.find((d) => d.id === a.department);
+  const now = w.current ? `<div class="now"><b>Agora:</b> ${esc(w.current.title)}</div>`
+    : w.last ? `<div class="now">Livre. Última entrega: ${esc(w.last.title)}</div>`
+    : `<div class="now">${a.role === 'specialist' ? 'Chamado quando uma automação fica pronta para revisão.' : 'Sem tarefas ainda.'}</div>`;
+  const list = w.mine.slice(-4).reverse().map((t) => `<li><b>${t.id}</b><span>${esc(t.title)} · ${LABEL[t.status]}</span></li>`).join('');
+  const extra = a.id === 'code-reviewer' && DATA.reviews ? `<div class="note">Revisões feitas até agora: ${DATA.reviews}. Ele não recebe tarefas; confere as dos colegas.</div>` : '';
+  card.style.setProperty('--c', `var(${c})`);
+  card.innerHTML = `<button class="close" type="button" aria-label="Fechar">×</button>
+    <h2>${esc(a.name)}</h2><div class="role">${dep ? esc(dep.name) : 'Braço direito do fundador'}</div>
+    <span class="pill">${LABEL[w.state]}</span>${now}
+    <div class="pct"><span>progresso da tarefa atual</span><span>${w.pct}%</span></div>
+    <div class="bar"><i style="width:${w.pct}%"></i></div>
+    ${list ? `<ul>${list}</ul>` : ''}
+    <div class="note">${doneN} de ${w.mine.length} tarefas concluídas.</div>${extra}`;
+  card.hidden = false;
+  card.querySelector('.close').addEventListener('click', () => select(null));
+}
+
+// clique na cena
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
+let down = null;
+canvas.addEventListener('pointerdown', (e) => { down = [e.clientX, e.clientY]; });
+canvas.addEventListener('pointerup', (e) => {
+  if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 6) return;
+  const r = canvas.getBoundingClientRect();
+  ptr.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(ptr, camera);
+  const hit = ray.intersectObjects(clickable, false)[0];
+  select(hit ? hit.object.userData.agent : null);
+});
+
+const openCount = DATA.tasks.filter((t) => OPEN(t.status)).length;
+const when = new Date(DATA.generated_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+document.getElementById('meta').textContent = `${people.length} na equipe · ${openCount} tarefas abertas · dados de ${when}`;
+
+// ---------- animação ----------
+function resize() {
+  const w = window.innerWidth, h = window.innerHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / h;
+  camera.fov = w < 640 ? 62 : 40; camera.updateProjectionMatrix();
+  if (!resize.done) { resize.done = true; if (w < 640) camera.position.set(0, 34, 40); }
+}
+window.addEventListener('resize', resize); resize();
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const v = new THREE.Vector3(), clock = new THREE.Clock();
+function frame() {
+  const t = clock.getElapsedTime();
+  for (const p of people) {
+    if (!reduce) {
+      if (p.working) { p.arms[0].rotation.x = -0.95 + Math.sin(t * 14 + p.phase) * 0.08; p.arms[1].rotation.x = -0.95 + Math.cos(t * 13 + p.phase) * 0.08; p.head.rotation.x = Math.sin(t * 1.5 + p.phase) * 0.05; }
+      else { p.head.rotation.y = Math.sin(t * 0.4 + p.phase) * 0.35; p.group.position.y = Math.sin(t * 1.2 + p.phase) * 0.01; }
+    }
+  }
+  controls.update();
+  renderer.render(scene, camera);
+  const W = window.innerWidth, H = window.innerHeight;
+  for (const { el, p } of tags) {
+    p.group.getWorldPosition(v); v.y += 2.65; v.project(camera);
+    const off = v.z > 1 || v.x < -1.2 || v.x > 1.2 || v.y < -1.2 || v.y > 1.2;
+    el.hidden = off;
+    if (!off) { el.style.left = `${(v.x * 0.5 + 0.5) * W}px`; el.style.top = `${(-v.y * 0.5 + 0.5) * H}px`; }
+  }
+  requestAnimationFrame(frame);
+}
+frame();
+// abre a ficha de quem mais precisa de atenção: trabalhando ou esperando o fundador
+const focus = people.find((p) => p.work.state === 'awaiting_approval') || people.find((p) => p.working) || people[0];
+if (focus) select(focus.agent.id);
+</script>

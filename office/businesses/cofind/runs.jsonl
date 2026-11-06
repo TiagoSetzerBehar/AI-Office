@@ -1,0 +1,6 @@
+{"at":"2026-11-06T14:53:18.807Z","business":"cofind","task":"T-0001","agent":"chief-of-staff","action":"work","mode":"real","summary":"Missão registrada e dividida: especificação (Operações) e depois implementação (Automação)"}
+{"at":"2026-11-06T14:54:06.887Z","business":"cofind","task":"T-0002","agent":"director-operations","action":"work","mode":"real","summary":"Spec escrita a partir dos campos reais de tarefas; limiares são suposições"}
+{"at":"2026-11-06T14:54:27.196Z","business":"cofind","task":"T-0002","agent":"chief-of-staff","action":"review","mode":"real","summary":"CoS leu a spec, conferiu campos com o código e aceitou"}
+{"at":"2026-11-06T14:55:51.247Z","business":"cofind","task":"T-0003","agent":"director-automation","action":"work","mode":"real","summary":"Implementado status-report + comando report; npm test 43/43; relatório real gerado"}
+{"at":"2026-11-06T14:56:28.676Z","business":"cofind","task":"T-0003","agent":"chief-of-staff","action":"review","mode":"real","summary":"CoS rodou npm test (43 pass), report real e com --now, verify; aceitou"}
+{"at":"2026-11-06T14:56:28.811Z","business":"cofind","task":"T-0001","agent":"chief-of-staff","action":"report","mode":"real","summary":"Missão consolidada e enviada para aprovação do fundador"}

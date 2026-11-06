@@ -1,0 +1,103 @@
+{
+  "id": "T-0003",
+  "business": "cofind",
+  "project": "office-setup",
+  "parent": "T-0001",
+  "depth": 1,
+  "title": "Implementar o comando 'report' conforme spec de T-0002",
+  "description": "Implementar a ferramenta do relatório semanal seguindo exatamente office/businesses/cofind/deliverables/T-0002/spec.md. Código em src/tools/status-report.js; expor como comando 'report' em src/cli.js; testes em tests/status-report.test.js com node:test, usando tests/helpers.js (sandbox). Sem dependências. Somente leitura. Negócio inexistente: manter o código de saída padrão da CLI (2 para OfficeError). Gere também o relatório real do CoFind em office/businesses/cofind/deliverables/T-0003/report-sample.md.",
+  "acceptance_criteria": [
+    "npm test passa, incluindo testes de A1–A8 (limiar-1 não dispara, limiar dispara), negócio vazio e isolamento",
+    "node src/cli.js report --business cofind imprime o relatório a partir dos dados reais"
+  ],
+  "assignee": "director-automation",
+  "created_by": "chief-of-staff",
+  "status": "done",
+  "external_action": false,
+  "requires_approval": false,
+  "revisions": 0,
+  "deliverables": [
+    {
+      "path": "src/tools/status-report.js",
+      "sha256": "13fd2a7fc0335fedc601203b91fa1196458a755d327b12b2655e28891c16d243",
+      "summary": "Ferramenta de relatório semanal (buildReport pura + wrapper statusReport)",
+      "by": "director-automation",
+      "at": "2026-11-06T14:55:51.118Z"
+    },
+    {
+      "path": "tests/status-report.test.js",
+      "sha256": "32e2aec37bb2e5dc5caa9cab474f066d0e6cb42b5012f1a3cf5d3a071a8a4ea0",
+      "summary": "Testes node:test: A1-A8, since, vazio, ordenação, truncamento, isolamento, somente leitura, CLI",
+      "by": "director-automation",
+      "at": "2026-11-06T14:55:51.165Z"
+    },
+    {
+      "path": "office/businesses/cofind/deliverables/T-0003/report-sample.md",
+      "sha256": "9bd83477c8ebe28e2f8918b3638dd884ece3f6250201b5b68af9cf7523fd8973",
+      "summary": "Relatório real do CoFind gerado com o comando report",
+      "by": "director-automation",
+      "at": "2026-11-06T14:55:51.212Z"
+    }
+  ],
+  "thread": [
+    {
+      "at": "2026-11-06T14:56:28.597Z",
+      "from": "chief-of-staff",
+      "to": "director-automation",
+      "body": "Verificado pelo CoS: npm test 43/43, report com dados reais e --now futuro dispara A4/A5, erro para negócio inexistente (exit 2), verify OK. Pendência menor registrada: --out deveria recusar pasta de outro negócio."
+    }
+  ],
+  "approval": null,
+  "history": [
+    {
+      "at": "2026-11-06T14:54:27.124Z",
+      "by": "chief-of-staff",
+      "type": "created",
+      "assignee": "director-automation"
+    },
+    {
+      "at": "2026-11-06T14:55:12.571Z",
+      "by": "director-automation",
+      "type": "status",
+      "from": "pending",
+      "to": "in_progress",
+      "note": ""
+    },
+    {
+      "at": "2026-11-06T14:55:51.118Z",
+      "by": "director-automation",
+      "type": "deliverable",
+      "path": "src/tools/status-report.js"
+    },
+    {
+      "at": "2026-11-06T14:55:51.165Z",
+      "by": "director-automation",
+      "type": "deliverable",
+      "path": "tests/status-report.test.js"
+    },
+    {
+      "at": "2026-11-06T14:55:51.212Z",
+      "by": "director-automation",
+      "type": "deliverable",
+      "path": "office/businesses/cofind/deliverables/T-0003/report-sample.md"
+    },
+    {
+      "at": "2026-11-06T14:55:51.290Z",
+      "by": "director-automation",
+      "type": "status",
+      "from": "in_progress",
+      "to": "review",
+      "note": ""
+    },
+    {
+      "at": "2026-11-06T14:56:28.640Z",
+      "by": "chief-of-staff",
+      "type": "status",
+      "from": "review",
+      "to": "done",
+      "note": "verificado: testes e execução real"
+    }
+  ],
+  "created_at": "2026-11-06T14:54:27.124Z",
+  "updated_at": "2026-11-06T14:56:28.640Z"
+}

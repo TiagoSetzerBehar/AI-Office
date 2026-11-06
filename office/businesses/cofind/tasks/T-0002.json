@@ -1,0 +1,77 @@
+{
+  "id": "T-0002",
+  "business": "cofind",
+  "project": "office-setup",
+  "parent": "T-0001",
+  "depth": 1,
+  "title": "Especificar conteúdo e regras de alerta do relatório semanal",
+  "description": "Definir seções, ordem, métricas e regras objetivas de alerta (ex.: tarefa parada há X dias) para um relatório lido em 2 minutos. A especificação será implementada pelo Diretor de Automação; precisa ser inequívoca e baseada nos campos reais das tarefas (ver src/lib/states.js e um JSON de tarefa).",
+  "acceptance_criteria": [
+    "Especificação em deliverables/T-0002/spec.md com seções, campos e regras de alerta testáveis",
+    "Cada regra de alerta é objetiva (limiar numérico ou condição sobre campos existentes)"
+  ],
+  "assignee": "director-operations",
+  "created_by": "chief-of-staff",
+  "status": "done",
+  "external_action": false,
+  "requires_approval": false,
+  "revisions": 0,
+  "deliverables": [
+    {
+      "path": "office/businesses/cofind/deliverables/T-0002/spec.md",
+      "sha256": "74e599cf4cf3508726a2b43add994019e42bb4f7cf505131f5be281a561a36f2",
+      "summary": "Especificação do relatório semanal (seções, regras A1-A8, exemplo)",
+      "by": "director-operations",
+      "at": "2026-11-06T14:54:06.850Z"
+    }
+  ],
+  "thread": [
+    {
+      "at": "2026-11-06T14:54:27.006Z",
+      "from": "chief-of-staff",
+      "to": "director-operations",
+      "body": "Verificado: campos e eventos conferem com src/lib/tasks.js. Aceito. Limiares serão levados ao fundador."
+    }
+  ],
+  "approval": null,
+  "history": [
+    {
+      "at": "2026-11-06T14:53:18.762Z",
+      "by": "chief-of-staff",
+      "type": "created",
+      "assignee": "director-operations"
+    },
+    {
+      "at": "2026-11-06T14:53:45.861Z",
+      "by": "director-operations",
+      "type": "status",
+      "from": "pending",
+      "to": "in_progress",
+      "note": ""
+    },
+    {
+      "at": "2026-11-06T14:54:06.850Z",
+      "by": "director-operations",
+      "type": "deliverable",
+      "path": "office/businesses/cofind/deliverables/T-0002/spec.md"
+    },
+    {
+      "at": "2026-11-06T14:54:06.922Z",
+      "by": "director-operations",
+      "type": "status",
+      "from": "in_progress",
+      "to": "review",
+      "note": ""
+    },
+    {
+      "at": "2026-11-06T14:54:27.066Z",
+      "by": "chief-of-staff",
+      "type": "status",
+      "from": "review",
+      "to": "done",
+      "note": "spec verificada pelo CoS"
+    }
+  ],
+  "created_at": "2026-11-06T14:53:18.762Z",
+  "updated_at": "2026-11-06T14:54:27.066Z"
+}

@@ -1,0 +1,76 @@
+{
+  "id": "T-0001",
+  "business": "cofind",
+  "project": "office-setup",
+  "parent": null,
+  "depth": 0,
+  "title": "Relatório semanal de status do CoFind (leitura em 2 minutos)",
+  "description": "Missão do fundador: quero ver rapidamente o que está em andamento, bloqueado, aguardando minha decisão e o que exige atenção.",
+  "acceptance_criteria": [
+    "Comando único gera o relatório a partir dos dados reais do registro",
+    "Mostra pendências de aprovação do fundador e alertas operacionais",
+    "Coberto por testes automatizados que passam"
+  ],
+  "assignee": "chief-of-staff",
+  "created_by": "founder",
+  "status": "awaiting_approval",
+  "external_action": false,
+  "requires_approval": true,
+  "revisions": 0,
+  "deliverables": [
+    {
+      "path": "office/businesses/cofind/deliverables/T-0001/mission-report.md",
+      "sha256": "8ea22085e7e91c752d614c674b853f75e8fc286bbd9467b9b9a4029c6f56696b",
+      "summary": "Relatório consolidado da missão",
+      "by": "chief-of-staff",
+      "at": "2026-11-06T14:56:28.713Z"
+    }
+  ],
+  "thread": [],
+  "approval": {
+    "requested_by": "chief-of-staff",
+    "requested_at": "2026-11-06T14:56:28.778Z",
+    "summary": "Comando 'report' pronto e verificado (43 testes). Decidir: aprovar missão; confirmar limiares dos alertas.",
+    "decision": null
+  },
+  "history": [
+    {
+      "at": "2026-11-06T14:53:18.688Z",
+      "by": "founder",
+      "type": "created",
+      "assignee": "chief-of-staff"
+    },
+    {
+      "at": "2026-11-06T14:53:18.724Z",
+      "by": "chief-of-staff",
+      "type": "status",
+      "from": "pending",
+      "to": "in_progress",
+      "note": ""
+    },
+    {
+      "at": "2026-11-06T14:56:28.713Z",
+      "by": "chief-of-staff",
+      "type": "deliverable",
+      "path": "office/businesses/cofind/deliverables/T-0001/mission-report.md"
+    },
+    {
+      "at": "2026-11-06T14:56:28.743Z",
+      "by": "chief-of-staff",
+      "type": "status",
+      "from": "in_progress",
+      "to": "review",
+      "note": ""
+    },
+    {
+      "at": "2026-11-06T14:56:28.776Z",
+      "by": "chief-of-staff",
+      "type": "status",
+      "from": "review",
+      "to": "awaiting_approval",
+      "note": "Comando 'report' pronto e verificado (43 testes). Decidir: aprovar missão; confirmar limiares dos alertas."
+    }
+  ],
+  "created_at": "2026-11-06T14:53:18.688Z",
+  "updated_at": "2026-11-06T14:56:28.778Z"
+}

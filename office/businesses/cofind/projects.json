@@ -1,1 +1,12 @@
-{ "projects": [] }
+{
+  "projects": [
+    {
+      "id": "office-setup",
+      "title": "Montagem da AI Office para o CoFind",
+      "goal": "Ferramentas internas de gestão para o fundador",
+      "owner": "chief-of-staff",
+      "status": "active",
+      "created_at": "2026-11-06T14:53:18.650Z"
+    }
+  ]
+}

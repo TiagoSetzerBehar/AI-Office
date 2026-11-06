@@ -7,6 +7,7 @@ import {
 import * as T from './lib/tasks.js';
 import { verifyBusiness } from './lib/verify.js';
 import { OfficeError } from './lib/paths.js';
+import { statusReport } from './tools/status-report.js';
 import { pathToFileURL } from 'node:url';
 
 const HELP = `AI Office CLI
@@ -31,6 +32,7 @@ const HELP = `AI Office CLI
   approve     --business <id> --id T-0001 [--note n]          (somente o fundador)
   reject      --business <id> --id T-0001 [--note n] [--changes]  (somente o fundador)
   verify      --business <id>                        integridade e hashes
+  report      --business <id> [--now <ISO>] [--out <arquivo>]   relatório semanal (somente leitura)
 
 Flags globais: --json (saída em JSON)
 `;
@@ -187,6 +189,11 @@ export function run(argv) {
         ? `OK — ${r.tasks} tarefas verificadas, nenhum problema`
         : `PROBLEMAS (${r.problems.length}):\n- ${r.problems.join('\n- ')}`;
       return out(human, r);
+    }
+
+    case 'report': {
+      const md = statusReport(biz(), { now: flags.now, out: flags.out });
+      return flags.out ? `relatório gravado em ${flags.out}` : md;
     }
 
     default:

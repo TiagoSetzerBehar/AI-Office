@@ -79,6 +79,22 @@
       "status": "planned",
       "kind": "claude-code-subagent",
       "definition": "office/agents-planned/director-marketing.md"
+    },
+    {
+      "id": "code-reviewer",
+      "name": "Revisor de Código",
+      "role": "specialist",
+      "department": "automation",
+      "reports_to": "director-automation",
+      "status": "active",
+      "kind": "claude-code-subagent",
+      "definition": ".claude/agents/code-reviewer.md",
+      "hired": {
+        "at": "2026-11-06",
+        "approved_by": "founder",
+        "channel": "chat",
+        "quote": "sim para os três"
+      }
     }
   ]
 }

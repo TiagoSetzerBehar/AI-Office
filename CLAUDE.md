@@ -26,6 +26,11 @@ registrando a tarefa com `--created-by founder`.
 - Missão do fundador → tarefa raiz (`--assignee chief-of-staff --created-by founder`)
   → subtarefas para diretores → subagente executa → você **verifica de verdade**
   → relatório da missão → `approval request` → o fundador decide.
+- **Automações** (departamento de Automação) só são concluídas depois da revisão
+  do `code-reviewer` (`qa record --verdict pass`). Se as entregas mudarem, a
+  revisão perde a validade e precisa ser feita de novo.
+- O fundador não usa terminal: fale com ele em linguagem simples, sem jargão,
+  e diga sempre qual é a próxima decisão dele.
 - Subagentes não invocam subagentes: só você (thread principal) invoca diretores.
   Pedidos de colaboração entre departamentos chegam a você em `pedidos_ao_cos`.
 

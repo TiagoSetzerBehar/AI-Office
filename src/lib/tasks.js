@@ -10,7 +10,9 @@ import {
   assertActiveAgent,
   assertAgentAllowedInBusiness,
   assertCanDelegate,
+  loadDepartments,
   FOUNDER,
+  CHIEF_OF_STAFF,
 } from './registry.js';
 import { STATES, TERMINAL, TRANSITIONS, LIMITS } from './states.js';
 
@@ -127,6 +129,9 @@ export function createTask(biz, opts) {
     // ações externas (publicar, enviar, gastar, alterar sistemas) SEMPRE exigem aprovação
     requires_approval: external || Boolean(opts.requiresApproval) || createdBy === FOUNDER,
     revisions: 0,
+    // revisor obrigatório do departamento do responsável, fixado na criação
+    quality_gate: qualityGateFor(assignee),
+    quality_checks: [],
     deliverables: [],
     thread: [],
     approval: null,
@@ -174,6 +179,10 @@ export function moveTask(biz, id, to, by, note = '') {
   }
   if (to === 'review' && task.deliverables.length === 0) {
     throw new OfficeError('não há entregas registradas: use "deliver" antes de enviar para revisão');
+  }
+  if (to === 'done' || to === 'awaiting_approval') {
+    const qa = qualityStatus(task);
+    if (!qa.ok) throw new OfficeError(`controle de qualidade pendente em ${id}: ${qa.reason}`);
   }
   if (to === 'done') {
     if (task.requires_approval && task.status !== 'awaiting_approval') {
@@ -237,26 +246,77 @@ export function listRuns(biz) {
  * Registra um arquivo como entrega verificável (caminho + hash SHA-256).
  * O arquivo deve estar no repositório e NÃO pode estar na pasta de outro negócio.
  */
+function resolveRepoFile(biz, file, label = 'entrega') {
+  if (!file || file === true) throw new OfficeError(`${label} precisa de --file`);
+  const abs = path.resolve(rootDir(), file);
+  if (!isInside(rootDir(), abs)) throw new OfficeError(`a ${label} deve estar dentro do repositório`);
+  const businessesRoot = path.join(dataDir(), 'businesses');
+  if (isInside(businessesRoot, abs) && !isInside(businessDir(biz), abs)) {
+    throw new OfficeError(`a ${label} pertence a outro negócio: dados de negócios são isolados`);
+  }
+  if (!fs.existsSync(abs) || !fs.statSync(abs).isFile()) throw new OfficeError(`arquivo não existe: ${file}`);
+  return { abs, rel: path.relative(rootDir(), abs).split(path.sep).join('/') };
+}
+
 export function deliver(biz, id, { agent, file, summary }) {
   assertActiveAgent(agent);
   const task = loadTask(biz, id);
   if (agent !== task.assignee && agent !== FOUNDER) {
     throw new OfficeError(`só o responsável (${task.assignee}) registra entregas em ${id}`);
   }
-  if (!file) throw new OfficeError('entrega precisa de --file');
-  const abs = path.resolve(rootDir(), file);
-  if (!isInside(rootDir(), abs)) throw new OfficeError('a entrega deve estar dentro do repositório');
-  const businessesRoot = path.join(dataDir(), 'businesses');
-  if (isInside(businessesRoot, abs) && !isInside(businessDir(biz), abs)) {
-    throw new OfficeError('a entrega pertence a outro negócio: dados de negócios são isolados');
-  }
-  if (!fs.existsSync(abs) || !fs.statSync(abs).isFile()) throw new OfficeError(`arquivo não existe: ${file}`);
-  const rel = path.relative(rootDir(), abs).split(path.sep).join('/');
+  const { abs, rel } = resolveRepoFile(biz, file);
   const item = { path: rel, sha256: sha256File(abs), summary: summary || '', by: agent, at: now() };
   task.deliverables = task.deliverables.filter((d) => d.path !== rel).concat(item);
   event(task, agent, 'deliverable', { path: rel });
   saveTask(biz, task);
   return item;
+}
+
+// ---------------------------------------------------------------- controle de qualidade
+
+/** Agente revisor obrigatório do departamento (ex.: code-reviewer em Automação), ou null. */
+export function qualityGateFor(agentId) {
+  const agent = getAgent(agentId);
+  if (!agent.department) return null;
+  const dep = loadDepartments().find((d) => d.id === agent.department);
+  return dep?.quality_gate || null;
+}
+
+const snapshot = (task) => task.deliverables.map((d) => `${d.path}:${d.sha256}`).sort().join('|');
+
+/** Situação do controle de qualidade: { required, ok, reason }. */
+export function qualityStatus(task) {
+  if (!task.quality_gate) return { required: false, ok: true, reason: 'sem revisor obrigatório' };
+  const last = (task.quality_checks || []).at(-1);
+  if (!last) return { required: true, ok: false, reason: `falta revisão de ${task.quality_gate}` };
+  if (last.verdict !== 'pass') return { required: true, ok: false, reason: `reprovada por ${last.by}` };
+  if (last.snapshot !== snapshot(task)) {
+    return { required: true, ok: false, reason: 'entregas mudaram depois da revisão; revisar de novo' };
+  }
+  return { required: true, ok: true, reason: `aprovada por ${last.by}` };
+}
+
+/**
+ * O revisor registra o veredito sobre as entregas atuais de uma tarefa em "review".
+ * O veredito fica preso ao hash das entregas: se mudarem, a revisão perde a validade.
+ */
+export function recordQualityCheck(biz, id, { by, verdict, file, summary = '' }) {
+  assertActiveAgent(by);
+  const task = loadTask(biz, id);
+  if (!task.quality_gate) throw new OfficeError(`${id} não exige revisão de qualidade`);
+  if (by !== task.quality_gate) throw new OfficeError(`somente ${task.quality_gate} registra a revisão de ${id}`);
+  if (task.status !== 'review') throw new OfficeError(`revisão só é registrada com a tarefa em "review" (está ${task.status})`);
+  if (!['pass', 'fail'].includes(verdict)) throw new OfficeError('--verdict deve ser pass ou fail');
+  const { abs, rel } = resolveRepoFile(biz, file, 'relatório de revisão');
+  const check = {
+    at: now(), by, verdict, summary,
+    report: { path: rel, sha256: sha256File(abs) },
+    snapshot: snapshot(task),
+  };
+  task.quality_checks = (task.quality_checks || []).concat(check);
+  event(task, by, 'quality_check', { verdict, report: rel });
+  saveTask(biz, task);
+  return check;
 }
 
 // ---------------------------------------------------------------- aprovações
@@ -273,13 +333,32 @@ export function requestApproval(biz, id, { by, summary }) {
 
 const DECISIONS = { approved: 'done', rejected: 'rejected', changes_requested: 'changes_requested' };
 
-export function decide(biz, id, { decision, note = '' }) {
+/**
+ * Registra a decisão do fundador. Duas formas:
+ * - o próprio fundador executa o comando (recordedBy omitido);
+ * - o fundador decide no chat e o Chief of Staff registra em seu nome
+ *   (recordedBy = chief-of-staff, channel = chat, quote = palavras exatas do fundador).
+ * Em ambos os casos a decisão é do fundador; quem registrou fica auditado.
+ */
+export function decide(biz, id, { decision, note = '', recordedBy = FOUNDER, channel = 'cli', quote = '' }) {
   if (!(decision in DECISIONS)) throw new OfficeError('decisão: approved | rejected | changes_requested');
+  if (recordedBy !== FOUNDER) {
+    if (recordedBy !== CHIEF_OF_STAFF) {
+      throw new OfficeError('somente o fundador ou o Chief of Staff (em nome dele) registram decisões');
+    }
+    if (!quote || quote === true) {
+      throw new OfficeError('registro em nome do fundador exige --quote com as palavras exatas dele');
+    }
+  }
   const task = moveTask(biz, id, DECISIONS[decision], FOUNDER, note);
-  task.approval = { ...(task.approval || {}), decision, decided_by: FOUNDER, decided_at: now(), note };
+  task.approval = {
+    ...(task.approval || {}), decision, decided_by: FOUNDER, decided_at: now(), note,
+    recorded_by: recordedBy, channel, quote: quote || null,
+  };
   saveTask(biz, task);
   appendJSONL(path.join(businessDir(biz), 'approvals.jsonl'), {
-    at: now(), task: id, type: 'decision', decision, by: FOUNDER, note,
+    at: now(), task: id, type: 'decision', decision, by: FOUNDER,
+    recorded_by: recordedBy, channel, quote: quote || null, note,
   });
   return task;
 }

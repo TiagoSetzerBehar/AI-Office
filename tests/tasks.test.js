@@ -238,3 +238,92 @@ test('CLI: fluxo básico e erros legíveis', () => {
   assert.throws(() => run(['task', 'create', '--business', 'alpha']), /faltando --title/);
   assert.match(run(['verify', '--business', 'alpha']), /^OK/);
 });
+
+// ------------------------------------------------------------ controle de qualidade (Automação)
+
+function automationTaskInReview() {
+  const m = mission();
+  const s = delegate(m, 'director-automation');
+  assert.equal(s.quality_gate, 'code-reviewer');
+  T.moveTask('alpha', s.id, 'in_progress', 'director-automation');
+  deliverFile(s);
+  T.moveTask('alpha', s.id, 'review', 'director-automation');
+  return s;
+}
+function qaReport(task, text = 'revisão') {
+  return sb.write(`office/businesses/alpha/deliverables/${task.id}/code-review.md`, text);
+}
+
+test('automação não conclui sem revisão do code-reviewer', () => {
+  const s = automationTaskInReview();
+  assert.throws(() => T.moveTask('alpha', s.id, 'done', 'chief-of-staff'), /falta revisão de code-reviewer/);
+});
+
+test('revisão aprovada libera a conclusão', () => {
+  const s = automationTaskInReview();
+  T.recordQualityCheck('alpha', s.id, { by: 'code-reviewer', verdict: 'pass', file: qaReport(s) });
+  assert.equal(T.moveTask('alpha', s.id, 'done', 'chief-of-staff').status, 'done');
+});
+
+test('revisão reprovada bloqueia; correção exige nova revisão', () => {
+  const s = automationTaskInReview();
+  T.recordQualityCheck('alpha', s.id, { by: 'code-reviewer', verdict: 'fail', file: qaReport(s) });
+  assert.throws(() => T.moveTask('alpha', s.id, 'done', 'chief-of-staff'), /reprovada/);
+  T.moveTask('alpha', s.id, 'changes_requested', 'chief-of-staff');
+  T.moveTask('alpha', s.id, 'in_progress', 'director-automation');
+  sb.write(`office/businesses/alpha/deliverables/${s.id}/out.md`, 'versão corrigida');
+  T.deliver('alpha', s.id, { agent: 'director-automation', file: `office/businesses/alpha/deliverables/${s.id}/out.md` });
+  T.moveTask('alpha', s.id, 'review', 'director-automation');
+  assert.throws(() => T.moveTask('alpha', s.id, 'done', 'chief-of-staff'), /reprovada/);
+  T.recordQualityCheck('alpha', s.id, { by: 'code-reviewer', verdict: 'pass', file: qaReport(s, 'ok agora') });
+  assert.equal(T.moveTask('alpha', s.id, 'done', 'chief-of-staff').status, 'done');
+});
+
+test('entrega alterada depois do "pass" invalida a revisão', () => {
+  const s = automationTaskInReview();
+  T.recordQualityCheck('alpha', s.id, { by: 'code-reviewer', verdict: 'pass', file: qaReport(s) });
+  sb.write(`office/businesses/alpha/deliverables/${s.id}/out.md`, 'mudou escondido');
+  T.deliver('alpha', s.id, { agent: 'director-automation', file: `office/businesses/alpha/deliverables/${s.id}/out.md` });
+  assert.throws(() => T.moveTask('alpha', s.id, 'done', 'chief-of-staff'), /mudaram depois da revisão/);
+});
+
+test('só o revisor designado registra revisão, e só em "review"', () => {
+  const m = mission();
+  const s = delegate(m, 'director-automation');
+  assert.throws(() => T.recordQualityCheck('alpha', s.id, { by: 'code-reviewer', verdict: 'pass', file: qaReport(s) }), /só é registrada com a tarefa em "review"/);
+  T.moveTask('alpha', s.id, 'in_progress', 'director-automation');
+  deliverFile(s);
+  T.moveTask('alpha', s.id, 'review', 'director-automation');
+  assert.throws(() => T.recordQualityCheck('alpha', s.id, { by: 'director-automation', verdict: 'pass', file: qaReport(s) }), /somente code-reviewer/);
+  assert.throws(() => T.recordQualityCheck('alpha', s.id, { by: 'code-reviewer', verdict: 'talvez', file: qaReport(s) }), /pass ou fail/);
+  // departamentos sem revisor obrigatório não exigem revisão
+  assert.equal(delegate(m, 'director-strategy').quality_gate, null);
+});
+
+// ------------------------------------------------------------ decisão do fundador registrada pelo CoS
+
+function missionAwaiting() {
+  const m = mission();
+  T.moveTask('alpha', m.id, 'in_progress', 'chief-of-staff');
+  deliverFile(m);
+  T.moveTask('alpha', m.id, 'review', 'chief-of-staff');
+  T.requestApproval('alpha', m.id, { by: 'chief-of-staff', summary: 'pronto' });
+  return m;
+}
+
+test('CoS registra decisão do fundador dada no chat, com citação', () => {
+  const m = missionAwaiting();
+  const t = T.decide('alpha', m.id, { decision: 'approved', recordedBy: 'chief-of-staff', channel: 'chat', quote: 'aprovo' });
+  assert.equal(t.status, 'done');
+  assert.equal(t.approval.decided_by, 'founder');
+  assert.equal(t.approval.recorded_by, 'chief-of-staff');
+  assert.equal(t.approval.quote, 'aprovo');
+  assert.equal(verifyBusiness('alpha').ok, true);
+});
+
+test('registro em nome do fundador exige citação e só o CoS pode fazê-lo', () => {
+  const m = missionAwaiting();
+  assert.throws(() => T.decide('alpha', m.id, { decision: 'approved', recordedBy: 'chief-of-staff' }), /exige --quote/);
+  assert.throws(() => T.decide('alpha', m.id, { decision: 'approved', recordedBy: 'director-operations', quote: 'x' }), /somente o fundador ou o Chief of Staff/);
+  assert.equal(T.loadTask('alpha', m.id).status, 'awaiting_approval');
+});

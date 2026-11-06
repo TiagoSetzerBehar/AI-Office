@@ -108,6 +108,16 @@ Regras do diretor:
    com `deliver`, mover para `review` e então `approval request`.
 8. Reportar ao fundador: resultado, como verificar, real vs. simulado, decisões pendentes.
 
+## 4.1 Controle de qualidade (Automação)
+
+```
+diretor entrega (review) ─► CoS invoca code-reviewer ─► qa record pass ─► CoS: done
+                                                   └─► qa record fail ─► CoS: changes_requested ─► diretor corrige ─► nova revisão
+```
+O revisor só confere; não altera código. O veredito fica preso ao SHA-256 das
+entregas: qualquer mudança posterior exige nova revisão. Aplicado pela CLI
+(`quality_gate` do departamento em `departments.json`).
+
 ## 5. Mensagens
 
 Toda comunicação fica **ancorada numa tarefa** (`task note --from --to --body`),

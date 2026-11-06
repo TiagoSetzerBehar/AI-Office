@@ -29,8 +29,12 @@ const HELP = `AI Office CLI
   run list    --business <id>
   approval request --business <id> --id T-0001 --by <agente> --summary <s>
   approval list    --business <id>
-  approve     --business <id> --id T-0001 [--note n]          (somente o fundador)
-  reject      --business <id> --id T-0001 [--note n] [--changes]  (somente o fundador)
+  approve     --business <id> --id T-0001 [--note n]          decisão do fundador
+  reject      --business <id> --id T-0001 [--note n] [--changes]  decisão do fundador
+              (o CoS registra decisões dadas no chat com:
+               --recorded-by chief-of-staff --quote "<palavras exatas do fundador>")
+  qa record   --business <id> --id T-0001 --by code-reviewer --verdict pass|fail --file <relatório>
+  qa status   --business <id> --id T-0001            situação do controle de qualidade
   verify      --business <id>                        integridade e hashes
   report      --business <id> [--now <ISO>] [--out <arquivo>]   relatório semanal (somente leitura)
 
@@ -172,15 +176,31 @@ export function run(argv) {
       return out(ts.map((t) => `${t.id} ${t.title}\n   ${t.approval?.summary || ''}`).join('\n') || '(nada pendente)', ts);
     }
 
-    case 'approve': {
-      const t = T.decide(biz(), req(flags, 'id'), { decision: 'approved', note: flags.note || '' });
-      return out(`${t.id} aprovada pelo fundador`, t);
+    case 'approve':
+    case 'reject': {
+      const decision = cmd === 'approve' ? 'approved' : flags.changes ? 'changes_requested' : 'rejected';
+      const recordedBy = flags['recorded-by'] || 'founder';
+      const t = T.decide(biz(), req(flags, 'id'), {
+        decision,
+        note: flags.note || '',
+        recordedBy,
+        channel: recordedBy === 'founder' ? 'cli' : 'chat',
+        quote: flags.quote,
+      });
+      const via = recordedBy === 'founder' ? '' : ` (decisão do fundador no chat, registrada por ${recordedBy})`;
+      return out(`${t.id}: ${t.status}${via}`, t);
     }
 
-    case 'reject': {
-      const decision = flags.changes ? 'changes_requested' : 'rejected';
-      const t = T.decide(biz(), req(flags, 'id'), { decision, note: flags.note || '' });
-      return out(`${t.id}: ${t.status}`, t);
+    case 'qa': {
+      if (sub === 'record') {
+        const c = T.recordQualityCheck(biz(), req(flags, 'id'), {
+          by: req(flags, 'by'), verdict: req(flags, 'verdict'), file: req(flags, 'file'), summary: flags.summary || '',
+        });
+        return out(`revisão registrada: ${c.verdict} por ${c.by}`, c);
+      }
+      const t = T.loadTask(biz(), req(flags, 'id'));
+      const q = T.qualityStatus(t);
+      return out(`${t.id}: ${q.required ? (q.ok ? 'OK' : 'PENDENTE') : 'não exigida'} — ${q.reason}`, q);
     }
 
     case 'verify': {

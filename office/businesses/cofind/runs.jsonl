@@ -10,3 +10,5 @@
 {"at":"2026-11-06T16:06:21.898Z","business":"cofind","task":"T-0005","agent":"chief-of-staff","action":"review","mode":"real","summary":"CoS leu a revisão; pediu ajustes por risco de sobrescrever dados protegidos via --out"}
 {"at":"2026-11-06T16:07:01.830Z","business":"cofind","task":"T-0005","agent":"director-automation","action":"work","mode":"real","summary":"Rodada 1: --out restrito, removeDeliverable + deliver --remove, AUTOMATIONS.md fora das entregas, sugestões; 61 testes ok"}
 {"at":"2026-11-06T16:08:00.220Z","business":"cofind","task":"T-0005","agent":"director-automation","action":"work","mode":"real","summary":"Rodada 2 (só registro): re-registradas entregas cli.js, tasks.test.js, verify.js; npm test ok"}
+{"at":"2026-11-06T16:08:41.460Z","business":"cofind","task":"T-0005","agent":"code-reviewer","action":"work","mode":"real","summary":"2a revisao manual de T-0005 (skills nao executadas): pass, 62 testes ok, verify OK"}
+{"at":"2026-11-06T16:09:04.136Z","business":"cofind","task":"T-0004","agent":"chief-of-staff","action":"work","mode":"real","summary":"T-0005 concluída após 2 revisões; missão enviada ao fundador"}

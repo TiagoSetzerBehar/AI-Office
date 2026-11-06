@@ -1,6 +1,20 @@
 # Status da implementação — o que é real, simulado e inexistente
 
-_Atualizado em 2026-11-06 (fim da Fase 1)._
+_Atualizado em 2026-11-06 (Fase 1 + revisor de código e vitrine)._
+
+## Novidades
+- **Revisor de Código** (`code-reviewer`) contratado com autorização do fundador.
+  Revisão obrigatória em Automação, aplicada pela CLI (`qa record` preso ao hash das entregas).
+- **Vitrine de automações**: `node src/cli.js automations`, também em `docs/AUTOMATIONS.md`.
+- Missões T-0004/T-0005: o revisor apontou um risco real (`report --out` podia
+  sobrescrever dados protegidos); o diretor corrigiu e uma 2ª revisão aprovou. 62 testes.
+- **Honestidade:** as skills `code-review`/`security-review` não rodaram dentro
+  do revisor (subagente genérico). Ele fez a revisão manual equivalente e
+  declarou isso. Falta testar com o revisor carregado pelo nome.
+- **Aprovação pelo chat:** a CLI já suporta (`--recorded-by chief-of-staff --quote`),
+  mas a regra 2 do `CLAUDE.md` ainda proíbe o CoS de registrar decisões. A mudança
+  dessa regra foi bloqueada pela proteção contra automodificação e precisa ser
+  feita pelo fundador.
 
 ## ✅ Executado de verdade
 | Item | Evidência |

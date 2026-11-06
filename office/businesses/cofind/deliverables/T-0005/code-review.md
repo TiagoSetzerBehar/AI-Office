@@ -1,30 +1,29 @@
-# Revisão de código — T-0005 (cofind)
+# Revisão de código — T-0005 (cofind) — 2ª revisão
 
-**Veredito: PASS** (sem problemas bloqueantes)
+**Veredito: PASS** (sem problemas bloqueantes; os 2 pontos importantes da 1ª revisão foram corrigidos)
 
 ## Como foi verificado
-- `npm test`: 59 pass / 0 fail.
-- Leitura de `git diff` (src/cli.js, src/lib/tasks.js, src/tools/status-report.js, tests/status-report.test.js) e dos arquivos novos (src/tools/automations.js, tests/automations.test.js, docs/AUTOMATIONS.md).
-- Skills `code-review` (medium) e `security-review`: NÃO foram executadas; revisão manual equivalente (bugs, caminhos, isolamento, credenciais, execução de comandos, rede, dependências).
-- Teste manual: `report --out office/businesses/cofind/../../registry/zz.md` é aceito (arquivo criado e removido por mim em seguida; registry confere limpo).
+- `npm test`: 62 pass / 0 fail.
+- `node src/cli.js verify --business cofind`: OK, 5 tarefas, nenhum problema; lista 2 versões substituídas (T-0003 status-report.js e seu teste, substituídas por T-0005), como esperado.
+- Leitura de `git diff` (src/cli.js, src/lib/tasks.js, src/lib/verify.js, src/tools/status-report.js, tests/*) e dos arquivos novos.
+- Teste manual: `report --out` com `deliverables/../tasks/x.md` e `docs/../src/x.md` foram recusados; nada foi criado.
+- Skills `code-review` e `security-review` NÃO foram executadas; revisão manual equivalente.
 
-## Checklist
-- Critérios de aceitação: ok (testes passam; `automations` lista as 2; `report --out` recusa outro negócio, com teste).
-- Testes para o principal e casos-limite: ok.
-- Sem dependências, rede ou APIs pagas: ok. Sem credenciais: ok. Sem execução de comandos: ok.
-- Isolamento: `assertNotOtherBusiness` é a mesma regra de antes, apenas extraída; `resolveRepoFile` mantém o comportamento. Ok.
+## Conferido em especial
+- `report --out`: só aceita `office/businesses/<mesmo negócio>/deliverables/` ou `docs/`; `..` é normalizado por `path.resolve`; outro negócio, registry, tasks/, runs, approvals, src/, .claude/ são recusados. Teste cobre os casos (9 caminhos ruins). Corrigido.
+- `removeDeliverable` / `deliver --remove`: só o responsável (ou fundador), só `in_progress`, falha se não for entrega, grava evento `deliverable_removed`, usa a biblioteca. Teste cobre. Ok.
+- `verify.js`: uma entrega alterada só vira "substituída" se existe registro mais novo do MESMO arquivo em OUTRA tarefa; a versão mais nova é checada no seu próprio laço, então se ela não confere vira problema (teste cobre "v3 sem registro"). Ok.
+- `writeAutomations` agora usa `isInside` + `OfficeError`; docs/AUTOMATIONS.md saiu das entregas. Corrigido.
 
 ## Problemas
 ### Bloqueante
 nenhum.
 
 ### Importante
-1. `src/tools/status-report.js:~173-176` — `--out` (já era assim antes) aceita qualquer arquivo do repositório fora de `office/businesses/`: `office/registry/*.json` (só o fundador altera), `src/`, `.claude/agents/`, e também `office/businesses/<mesmo negócio>/tasks/*.json`, `runs.jsonl`, `approvals.jsonl`. Um `--out` errado sobrescreve esses arquivos e burla a regra "nunca editar tasks/ à mão". Correção sugerida: restringir `--out` a `office/businesses/<id>/deliverables/` (ou a `docs/`), ou recusar sobrescrever arquivos existentes que não sejam .md.
-2. `docs/AUTOMATIONS.md` (entrega registrada com hash) mostra a vitrine como "pendente". Depois do `pass`, o arquivo gerado muda ("aprovada pelo revisor") e o hash registrado deixa de bater (`verify` aponta); re-registrar a entrega invalida o veredito (snapshot por hash). Correção sugerida: o CoS regenera e re-registra só depois do pass e aciona nova revisão curta, ou tirar docs/AUTOMATIONS.md da lista de entregas (é arquivo gerado).
+nenhum.
 
 ### Sugestão
-1. `src/lib/tasks.js:~246-249` — o comentário "Registra um arquivo como entrega verificável..." ficou solto acima de `assertNotOtherBusiness`; mover para `resolveRepoFile`.
-2. `src/tools/automations.js:82` — usa `startsWith('..')` e lança `Error` comum; usar `isInside` e `OfficeError` (como em status-report). Hoje `--out` não é exposto na CLI, então o impacto é baixo.
-3. `assertNotOtherBusiness` não resolve symlinks (padrão preexistente em todo o código); só relevante se alguém criar symlinks no repositório.
-4. `tests/automations.test.js` "todo arquivo de src/tools" só compara contagem; comparar nomes dos arquivos com os ids/lista daria mensagem de erro melhor.
-5. Teste do `--out` não cobre caminhos com `..` (ex.: `office/businesses/alpha/../beta/x.md`); a implementação trata (path.resolve), vale um caso.
+1. `src/lib/verify.js` (~linha 44): "substituída" é aceita se a versão mais nova confere, mesmo que o arquivo tenha sido adulterado antes de ser re-registrado por outra tarefa (a adulteração fica "lavada"). É inerente ao desenho; a lista de substituídas na saída do `verify` serve para o CoS conferir. Se quiser mais rigor, exigir que a tarefa nova esteja revisada/concluída.
+2. `verify.js`: duas entregas do MESMO arquivo dentro da MESMA tarefa com hashes diferentes geram "alterada" mesmo sendo versão antiga (newer.task === t.id). Falso positivo raro; considerar tratar também esse caso.
+3. `report --out` em `docs/` ainda pode sobrescrever docs existentes (ex.: docs/PROTOCOL.md). Opcional: recusar sobrescrever arquivo existente que não tenha o cabeçalho do relatório.
+4. `assertNotOtherBusiness` não resolve symlinks (padrão preexistente).

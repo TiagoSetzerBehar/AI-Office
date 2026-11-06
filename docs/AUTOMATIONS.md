@@ -16,6 +16,6 @@ Mostra em uma página o que está andando, parado ou esperando decisão no negó
 Lista todas as automações do escritório e mostra se cada uma foi aprovada na revisão de código.
 
 - **Como usar:** `node src/cli.js automations`
-- **Revisão de código:** pendente
+- **Revisão de código:** aprovada pelo revisor
 - **Responsável:** director-automation
 - **Tarefa de origem:** cofind/T-0005

@@ -24,8 +24,15 @@ Automação.
    - `security-review`: procura falhas de segurança (caminhos fora do
      repositório, vazamento de dados entre negócios, credenciais, execução de
      comandos).
-   Se uma skill não estiver disponível ou não puder rodar no seu contexto, faça
-   a mesma verificação manualmente e **diga isso** no relatório.
+   **Importante:** essas skills revisam **mudanças ainda não salvas no git**
+   (o "diff"). Por isso a revisão acontece **antes** do commit: o CoS só faz
+   commit das mudanças de uma automação depois do seu `pass`. Confira com
+   `git status` se as entregas aparecem como modificadas ou novas. Se já foram
+   commitadas, revise o intervalo do commit (`git diff <commit>~1 <commit>`).
+   A `security-review` precisa de `origin/HEAD`. Se faltar, o CoS configura com
+   `git remote set-head origin <branch-padrão>`.
+   Se uma skill não rodar mesmo assim, faça a mesma verificação manualmente e
+   **diga isso** no relatório, com o erro exato.
 4. Confira o checklist da AI Office:
    - [ ] faz o que os critérios de aceitação pedem;
    - [ ] tem testes para o comportamento principal e os casos-limite;

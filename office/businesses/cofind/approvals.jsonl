@@ -1,2 +1,4 @@
 {"at":"2026-11-06T14:56:28.778Z","task":"T-0001","type":"requested","by":"chief-of-staff","summary":"Comando 'report' pronto e verificado (43 testes). Decidir: aprovar missão; confirmar limiares dos alertas."}
 {"at":"2026-11-06T16:09:04.103Z","task":"T-0004","type":"requested","by":"chief-of-staff","summary":"Vitrine de automações pronta; Revisor de Código contratado e obrigatório. Revisado e aprovado (2ª revisão)."}
+{"at":"2026-11-06T16:30:39.289Z","task":"T-0001","type":"decision","decision":"approved","by":"founder","recorded_by":"chief-of-staff","channel":"chat","quote":"aprovo T-0001 e T-0004","note":"aprovado pelo fundador no chat"}
+{"at":"2026-11-06T16:30:39.352Z","task":"T-0004","type":"decision","decision":"approved","by":"founder","recorded_by":"chief-of-staff","channel":"chat","quote":"aprovo T-0001 e T-0004","note":"aprovado pelo fundador no chat"}

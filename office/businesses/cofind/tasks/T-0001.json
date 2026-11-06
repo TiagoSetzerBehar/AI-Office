@@ -13,7 +13,7 @@
   ],
   "assignee": "chief-of-staff",
   "created_by": "founder",
-  "status": "awaiting_approval",
+  "status": "done",
   "external_action": false,
   "requires_approval": true,
   "revisions": 0,
@@ -31,7 +31,13 @@
     "requested_by": "chief-of-staff",
     "requested_at": "2026-11-06T14:56:28.778Z",
     "summary": "Comando 'report' pronto e verificado (43 testes). Decidir: aprovar missão; confirmar limiares dos alertas.",
-    "decision": null
+    "decision": "approved",
+    "decided_by": "founder",
+    "decided_at": "2026-11-06T16:30:39.289Z",
+    "note": "aprovado pelo fundador no chat",
+    "recorded_by": "chief-of-staff",
+    "channel": "chat",
+    "quote": "aprovo T-0001 e T-0004"
   },
   "history": [
     {
@@ -69,8 +75,16 @@
       "from": "review",
       "to": "awaiting_approval",
       "note": "Comando 'report' pronto e verificado (43 testes). Decidir: aprovar missão; confirmar limiares dos alertas."
+    },
+    {
+      "at": "2026-11-06T16:30:39.281Z",
+      "by": "founder",
+      "type": "status",
+      "from": "awaiting_approval",
+      "to": "done",
+      "note": "aprovado pelo fundador no chat"
     }
   ],
   "created_at": "2026-11-06T14:53:18.688Z",
-  "updated_at": "2026-11-06T14:56:28.778Z"
+  "updated_at": "2026-11-06T16:30:39.289Z"
 }

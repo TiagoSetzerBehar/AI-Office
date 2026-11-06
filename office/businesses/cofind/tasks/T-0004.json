@@ -13,7 +13,7 @@
   ],
   "assignee": "chief-of-staff",
   "created_by": "founder",
-  "status": "awaiting_approval",
+  "status": "done",
   "external_action": false,
   "requires_approval": true,
   "revisions": 0,
@@ -33,7 +33,13 @@
     "requested_by": "chief-of-staff",
     "requested_at": "2026-11-06T16:09:04.103Z",
     "summary": "Vitrine de automações pronta; Revisor de Código contratado e obrigatório. Revisado e aprovado (2ª revisão).",
-    "decision": null
+    "decision": "approved",
+    "decided_by": "founder",
+    "decided_at": "2026-11-06T16:30:39.351Z",
+    "note": "aprovado pelo fundador no chat",
+    "recorded_by": "chief-of-staff",
+    "channel": "chat",
+    "quote": "aprovo T-0001 e T-0004"
   },
   "history": [
     {
@@ -71,8 +77,16 @@
       "from": "review",
       "to": "awaiting_approval",
       "note": "Vitrine de automações pronta; Revisor de Código contratado e obrigatório. Revisado e aprovado (2ª revisão)."
+    },
+    {
+      "at": "2026-11-06T16:30:39.351Z",
+      "by": "founder",
+      "type": "status",
+      "from": "awaiting_approval",
+      "to": "done",
+      "note": "aprovado pelo fundador no chat"
     }
   ],
   "created_at": "2026-11-06T16:03:43.377Z",
-  "updated_at": "2026-11-06T16:09:04.103Z"
+  "updated_at": "2026-11-06T16:30:39.351Z"
 }

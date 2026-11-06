@@ -1,0 +1,17 @@
+{
+  "id": "cofind",
+  "name": "CoFind",
+  "description": "Plataforma de networking para empreendedores na Espanha. Futuramente conectará empreendedores a investidores.",
+  "market": "Espanha",
+  "language": "es/pt",
+  "departments_enabled": ["operations", "automation", "strategy", "finance", "commercial", "marketing"],
+  "permissions": {
+    "external_actions_require_approval": true,
+    "allowed_external_systems": [],
+    "notes": "Nenhum sistema externo autorizado nesta fase. Publicar, enviar mensagens, gastar dinheiro ou alterar sistemas externos exige aprovação explícita do fundador."
+  },
+  "constraints": [
+    "O desenvolvimento do app CoFind é feito por um programador humano; a AI Office não altera o código do app.",
+    "Não produzir conteúdo orgânico para redes sociais."
+  ]
+}

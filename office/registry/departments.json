@@ -1,0 +1,58 @@
+{
+  "departments": [
+    {
+      "id": "operations",
+      "name": "Gestão & Operações",
+      "status": "active",
+      "priority": 1,
+      "director": "director-operations",
+      "mission": "Organizar projetos, planejar atividades, acompanhar tarefas e prazos, documentar processos, identificar problemas operacionais e coordenar a execução dos objetivos.",
+      "out_of_scope": []
+    },
+    {
+      "id": "automation",
+      "name": "Automação & Tecnologia",
+      "status": "active",
+      "priority": 2,
+      "director": "director-automation",
+      "mission": "Desenvolver automações, integrar ferramentas e APIs, criar sistemas internos, otimizar processos e construir soluções tecnológicas para os negócios.",
+      "out_of_scope": ["Desenvolvimento principal do aplicativo CoFind (responsabilidade do programador humano)"]
+    },
+    {
+      "id": "strategy",
+      "name": "Estratégia & Inteligência",
+      "status": "active",
+      "priority": 3,
+      "director": "director-strategy",
+      "mission": "Pesquisas de mercado, análises de concorrentes, estudos de oportunidades, modelos de negócio, planejamento estratégico e apoio às decisões.",
+      "out_of_scope": []
+    },
+    {
+      "id": "finance",
+      "name": "Finanças & Administração",
+      "status": "planned",
+      "priority": 4,
+      "director": "director-finance",
+      "mission": "Orçamentos, despesas, fluxo de caixa, burn rate, runway, projeções financeiras, documentos administrativos e acompanhamento financeiro.",
+      "out_of_scope": ["Movimentar dinheiro ou contratar serviços sem aprovação do fundador"]
+    },
+    {
+      "id": "commercial",
+      "name": "Comercial & Business Development",
+      "status": "planned",
+      "priority": 5,
+      "director": "director-commercial",
+      "mission": "Pesquisar potenciais clientes e parceiros, identificar oportunidades comerciais, estruturar propostas, organizar negociações e acompanhar relacionamentos.",
+      "out_of_scope": ["Enviar mensagens ou propostas a terceiros sem aprovação do fundador"]
+    },
+    {
+      "id": "marketing",
+      "name": "Marketing & Growth",
+      "status": "planned",
+      "priority": 6,
+      "director": "director-marketing",
+      "mission": "Estratégias de aquisição, campanhas pagas, posicionamento, análise de mercado, conversão, estratégias de lançamento e acompanhamento de resultados.",
+      "out_of_scope": ["Produção de conteúdo orgânico para redes sociais", "Publicar campanhas ou gastar verba sem aprovação do fundador"]
+    }
+  ]
+}

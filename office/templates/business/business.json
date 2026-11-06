@@ -1,0 +1,11 @@
+{
+  "id": "<business-id>",
+  "name": "<Nome do negócio>",
+  "description": "",
+  "departments_enabled": ["operations", "automation", "strategy"],
+  "permissions": {
+    "external_actions_require_approval": true,
+    "allowed_external_systems": []
+  },
+  "constraints": []
+}

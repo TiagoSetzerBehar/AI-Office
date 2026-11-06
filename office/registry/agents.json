@@ -1,0 +1,84 @@
+{
+  "agents": [
+    {
+      "id": "founder",
+      "name": "Fundador",
+      "role": "founder",
+      "department": null,
+      "reports_to": null,
+      "status": "active",
+      "kind": "human",
+      "definition": null
+    },
+    {
+      "id": "chief-of-staff",
+      "name": "Chief of Staff (nome a definir)",
+      "role": "chief_of_staff",
+      "department": null,
+      "reports_to": "founder",
+      "status": "active",
+      "kind": "claude-code-main-thread",
+      "definition": ".claude/agents/chief-of-staff.md"
+    },
+    {
+      "id": "director-operations",
+      "name": "Diretor de Gestão & Operações",
+      "role": "director",
+      "department": "operations",
+      "reports_to": "chief-of-staff",
+      "status": "active",
+      "kind": "claude-code-subagent",
+      "definition": ".claude/agents/director-operations.md"
+    },
+    {
+      "id": "director-automation",
+      "name": "Diretor de Automação & Tecnologia",
+      "role": "director",
+      "department": "automation",
+      "reports_to": "chief-of-staff",
+      "status": "active",
+      "kind": "claude-code-subagent",
+      "definition": ".claude/agents/director-automation.md"
+    },
+    {
+      "id": "director-strategy",
+      "name": "Diretor de Estratégia & Inteligência",
+      "role": "director",
+      "department": "strategy",
+      "reports_to": "chief-of-staff",
+      "status": "active",
+      "kind": "claude-code-subagent",
+      "definition": ".claude/agents/director-strategy.md"
+    },
+    {
+      "id": "director-finance",
+      "name": "Diretor de Finanças & Administração",
+      "role": "director",
+      "department": "finance",
+      "reports_to": "chief-of-staff",
+      "status": "planned",
+      "kind": "claude-code-subagent",
+      "definition": "office/agents-planned/director-finance.md"
+    },
+    {
+      "id": "director-commercial",
+      "name": "Diretor Comercial & Business Development",
+      "role": "director",
+      "department": "commercial",
+      "reports_to": "chief-of-staff",
+      "status": "planned",
+      "kind": "claude-code-subagent",
+      "definition": "office/agents-planned/director-commercial.md"
+    },
+    {
+      "id": "director-marketing",
+      "name": "Diretor de Marketing & Growth",
+      "role": "director",
+      "department": "marketing",
+      "reports_to": "chief-of-staff",
+      "status": "planned",
+      "kind": "claude-code-subagent",
+      "definition": "office/agents-planned/director-marketing.md"
+    }
+  ]
+}

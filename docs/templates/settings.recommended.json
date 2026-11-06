@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run office:*)",
+      "Bash(npm test:*)",
+      "Bash(node src/cli.js:*)"
+    ],
+    "deny": [
+      "Bash(npm run office -- approve:*)",
+      "Bash(npm run office -- reject:*)",
+      "Bash(node src/cli.js approve:*)",
+      "Bash(node src/cli.js reject:*)",
+      "Edit(office/businesses/*/approvals.jsonl)",
+      "Write(office/businesses/*/approvals.jsonl)",
+      "Edit(office/businesses/*/tasks/**)",
+      "Write(office/businesses/*/tasks/**)",
+      "Read(.env)",
+      "Read(.env.*)"
+    ],
+    "ask": [
+      "Edit(office/registry/**)",
+      "Write(office/registry/**)",
+      "Edit(.claude/agents/**)",
+      "Write(.claude/agents/**)"
+    ]
+  }
+}

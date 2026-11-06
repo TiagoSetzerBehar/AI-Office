@@ -1,0 +1,16 @@
+{
+  "name": "ai-office",
+  "version": "0.1.0",
+  "description": "AI Office — empresa digital operada por agentes de IA (fase 1: fundação local)",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "office": "node src/cli.js",
+    "test": "node --test tests/*.test.js",
+    "verify": "node src/cli.js verify --business cofind"
+  },
+  "license": "UNLICENSED"
+}

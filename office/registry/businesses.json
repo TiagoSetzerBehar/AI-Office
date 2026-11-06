@@ -1,0 +1,10 @@
+{
+  "businesses": [
+    {
+      "id": "cofind",
+      "name": "CoFind",
+      "status": "active",
+      "primary": true
+    }
+  ]
+}

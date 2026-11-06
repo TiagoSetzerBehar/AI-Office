@@ -194,13 +194,42 @@ test('CLI: report imprime; --out grava dentro do repositório', () => {
   realTasks();
   const md = run(['report', '--business', 'alpha', '--now', '2030-01-01T00:00:00Z']);
   assert.match(md, /^# Relatório semanal — alpha — 2030-01-01/);
-  const msg = run(['report', '--business', 'alpha', '--out', 'saida/r.md']);
+  const msg = run(['report', '--business', 'alpha', '--out', 'docs/r.md']);
   assert.match(msg, /gravado/);
-  assert.match(fs.readFileSync(path.join(sb.root, 'saida', 'r.md'), 'utf8'), /^# Relatório semanal/);
+  assert.match(fs.readFileSync(path.join(sb.root, 'docs', 'r.md'), 'utf8'), /^# Relatório semanal/);
   assert.throws(() => run(['report', '--business', 'alpha', '--out', '../fora.md']), /dentro do repositório/);
 });
 
 test('CLI: negócio inexistente gera OfficeError; sem --business também', () => {
   assert.throws(() => run(['report', '--business', 'nada']), { name: 'OfficeError' });
   assert.throws(() => run(['report']), /faltando --business/);
+});
+
+test('report --out recusa a pasta de OUTRO negócio, mas aceita a do próprio', () => {
+  assert.throws(
+    () => run(['report', '--business', 'alpha', '--out', 'office/businesses/beta/deliverables/r.md']),
+    /outro negócio/
+  );
+  assert.ok(!fs.existsSync(path.join(sb.root, 'office/businesses/beta/deliverables/r.md')));
+  run(['report', '--business', 'alpha', '--out', 'office/businesses/alpha/deliverables/r.md']);
+  assert.ok(fs.existsSync(path.join(sb.root, 'office/businesses/alpha/deliverables/r.md')));
+});
+
+test('report --out só grava em deliverables/ do próprio negócio ou docs/ (também com "..")', () => {
+  const bad = [
+    'office/registry/businesses.json',
+    'office/businesses/alpha/tasks/T-0001.json',
+    'office/businesses/alpha/runs.jsonl',
+    'office/businesses/alpha/approvals.jsonl',
+    'src/x.md',
+    '.claude/agents/x.md',
+    'office/businesses/alpha/../../registry/x.md',
+    'office/businesses/alpha/deliverables/../tasks/x.md',
+    'office/businesses/alpha/../beta/deliverables/x.md',
+  ];
+  for (const f of bad) {
+    assert.throws(() => run(['report', '--business', 'alpha', '--out', f]), { name: 'OfficeError' }, f);
+  }
+  assert.ok(!fs.existsSync(path.join(sb.root, 'src/x.md')));
+  assert.ok(!fs.existsSync(path.join(sb.data, 'registry/x.md')));
 });

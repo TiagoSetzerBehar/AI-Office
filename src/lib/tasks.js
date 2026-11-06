@@ -242,6 +242,14 @@ export function listRuns(biz) {
 
 // ---------------------------------------------------------------- entregas
 
+/** Isolamento: recusa caminhos dentro da pasta de OUTRO negócio. */
+export function assertNotOtherBusiness(biz, abs, label = 'entrega') {
+  const businessesRoot = path.join(dataDir(), 'businesses');
+  if (isInside(businessesRoot, abs) && !isInside(businessDir(biz), abs)) {
+    throw new OfficeError(`a ${label} pertence a outro negócio: dados de negócios são isolados`);
+  }
+}
+
 /**
  * Registra um arquivo como entrega verificável (caminho + hash SHA-256).
  * O arquivo deve estar no repositório e NÃO pode estar na pasta de outro negócio.
@@ -250,10 +258,7 @@ function resolveRepoFile(biz, file, label = 'entrega') {
   if (!file || file === true) throw new OfficeError(`${label} precisa de --file`);
   const abs = path.resolve(rootDir(), file);
   if (!isInside(rootDir(), abs)) throw new OfficeError(`a ${label} deve estar dentro do repositório`);
-  const businessesRoot = path.join(dataDir(), 'businesses');
-  if (isInside(businessesRoot, abs) && !isInside(businessDir(biz), abs)) {
-    throw new OfficeError(`a ${label} pertence a outro negócio: dados de negócios são isolados`);
-  }
+  assertNotOtherBusiness(biz, abs, label);
   if (!fs.existsSync(abs) || !fs.statSync(abs).isFile()) throw new OfficeError(`arquivo não existe: ${file}`);
   return { abs, rel: path.relative(rootDir(), abs).split(path.sep).join('/') };
 }
@@ -268,6 +273,26 @@ export function deliver(biz, id, { agent, file, summary }) {
   const item = { path: rel, sha256: sha256File(abs), summary: summary || '', by: agent, at: now() };
   task.deliverables = task.deliverables.filter((d) => d.path !== rel).concat(item);
   event(task, agent, 'deliverable', { path: rel });
+  saveTask(biz, task);
+  return item;
+}
+
+/** Remove uma entrega registrada (ex.: arquivo gerado). Só o responsável, com a tarefa em in_progress. */
+export function removeDeliverable(biz, id, { agent, file }) {
+  assertActiveAgent(agent);
+  const task = loadTask(biz, id);
+  if (agent !== task.assignee && agent !== FOUNDER) {
+    throw new OfficeError(`só o responsável (${task.assignee}) remove entregas de ${id}`);
+  }
+  if (task.status !== 'in_progress') {
+    throw new OfficeError(`entregas só são removidas com a tarefa em "in_progress" (está ${task.status})`);
+  }
+  if (!file || file === true) throw new OfficeError('remoção precisa de --file');
+  const rel = path.relative(rootDir(), path.resolve(rootDir(), file)).split(path.sep).join('/');
+  const item = task.deliverables.find((d) => d.path === rel);
+  if (!item) throw new OfficeError(`${rel} não é entrega de ${id}`);
+  task.deliverables = task.deliverables.filter((d) => d.path !== rel);
+  event(task, agent, 'deliverable_removed', { path: rel });
   saveTask(biz, task);
   return item;
 }

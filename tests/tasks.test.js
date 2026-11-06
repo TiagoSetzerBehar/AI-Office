@@ -327,3 +327,36 @@ test('registro em nome do fundador exige citação e só o CoS pode fazê-lo', (
   assert.throws(() => T.decide('alpha', m.id, { decision: 'approved', recordedBy: 'director-operations', quote: 'x' }), /somente o fundador ou o Chief of Staff/);
   assert.equal(T.loadTask('alpha', m.id).status, 'awaiting_approval');
 });
+
+test('removeDeliverable: só o responsável, só em in_progress, registra evento; CLI --remove', () => {
+  const t = delegate(mission());
+  T.moveTask('alpha', t.id, 'in_progress', 'director-operations');
+  deliverFile(t);
+  assert.throws(() => T.removeDeliverable('alpha', t.id, { agent: 'director-strategy', file: `office/businesses/alpha/deliverables/${t.id}/out.md` }), /só o responsável/);
+  assert.throws(() => T.removeDeliverable('alpha', t.id, { agent: 'director-operations', file: 'nao/e/entrega.md' }), /não é entrega/);
+  const msg = run(['deliver', '--remove', '--business', 'alpha', '--id', t.id, '--agent', 'director-operations',
+    '--file', `office/businesses/alpha/deliverables/${t.id}/out.md`]);
+  assert.match(msg, /entrega removida/);
+  const after = T.loadTask('alpha', t.id);
+  assert.equal(after.deliverables.length, 0);
+  assert.equal(after.history.at(-1).type, 'deliverable_removed');
+  deliverFile(t);
+  T.moveTask('alpha', t.id, 'review', 'director-operations');
+  assert.throws(() => T.removeDeliverable('alpha', t.id, { agent: 'director-operations', file: `office/businesses/alpha/deliverables/${t.id}/out.md` }), /in_progress/);
+});
+
+test('verify: arquivo re-registrado por tarefa mais nova é "substituído", não adulterado', async () => {
+  const m = mission();
+  const a = delegate(m, 'director-strategy');
+  const b = delegate(m, 'director-strategy');
+  const rel = sb.write('src/tools/x.js', 'v1');
+  T.deliver('alpha', a.id, { agent: 'director-strategy', file: rel });
+  await new Promise((r) => setTimeout(r, 5));
+  sb.write('src/tools/x.js', 'v2');
+  T.deliver('alpha', b.id, { agent: 'director-strategy', file: rel });
+  const r = verifyBusiness('alpha');
+  assert.equal(r.ok, true);
+  assert.match(r.superseded[0], /substituída por T-0003/);
+  sb.write('src/tools/x.js', 'v3 sem registro');
+  assert.equal(verifyBusiness('alpha').ok, false); // a versão mais nova não confere: problema
+});

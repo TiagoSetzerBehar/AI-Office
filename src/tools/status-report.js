@@ -1,9 +1,18 @@
 // Relatório semanal de status (somente leitura). Spec: deliverables/T-0002/spec.md
 import fs from 'node:fs';
 import path from 'node:path';
-import { listTasks } from '../lib/tasks.js';
+import { listTasks, assertNotOtherBusiness } from '../lib/tasks.js';
 import { STATES, TERMINAL } from '../lib/states.js';
-import { rootDir, OfficeError, isInside } from '../lib/paths.js';
+import { rootDir, businessDir, OfficeError, isInside } from '../lib/paths.js';
+
+export const meta = {
+  id: 'report',
+  name: 'Relatório semanal',
+  summary: 'Mostra em uma página o que está andando, parado ou esperando decisão no negócio.',
+  usage: 'node src/cli.js report --business cofind',
+  owner: 'director-automation',
+  task: 'cofind/T-0003',
+};
 
 const DAY = 86400000;
 export const THRESHOLDS = { A1: 2, A4: 3, A5: 2, A6: 2, A7: 3 };
@@ -164,6 +173,11 @@ export function statusReport(business, { now, out } = {}) {
     if (out === true) throw new OfficeError('faltando valor de --out');
     const abs = path.resolve(rootDir(), out);
     if (!isInside(rootDir(), abs)) throw new OfficeError('--out deve estar dentro do repositório');
+    assertNotOtherBusiness(business, abs, '--out');
+    const allowed = [path.join(businessDir(business), 'deliverables'), path.join(rootDir(), 'docs')];
+    if (!allowed.some((dir) => isInside(dir, abs))) {
+      throw new OfficeError(`--out só pode gravar em office/businesses/${business}/deliverables/ ou em docs/`);
+    }
     fs.mkdirSync(path.dirname(abs), { recursive: true });
     fs.writeFileSync(abs, md);
   }

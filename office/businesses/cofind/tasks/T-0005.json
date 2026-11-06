@@ -1,0 +1,290 @@
+{
+  "id": "T-0005",
+  "business": "cofind",
+  "project": "office-setup",
+  "parent": "T-0004",
+  "depth": 1,
+  "title": "Construir a vitrine de automações e corrigir report --out",
+  "description": "1) Cada ferramenta em src/tools/*.js exporta 'meta' = { id, name, summary (1 frase simples para leigo), usage (comando), owner, task (id da tarefa de origem, ex. 'cofind/T-0003') }. Adicione meta em status-report.js. 2) Novo src/tools/automations.js: lista as ferramentas (importando src/tools/*.js exceto ela mesma, ou uma lista explícita — escolha a mais simples e testável) e mostra para cada uma o estado da revisão de código, lido da tarefa de origem via src/lib (qualityStatus): 'aprovada pelo revisor', 'pendente', ou 'criada antes do revisor existir'. 3) Comando 'automations' na CLI (imprime Markdown) e 'automations --write' gera docs/AUTOMATIONS.md. 4) Correção: 'report --out' deve recusar caminhos dentro da pasta de OUTRO negócio (reuse a regra de isolamento de src/lib/tasks.js). 5) Testes em tests/automations.test.js e um teste novo para o --out. Sem dependências. A vitrine também deve se listar a si mesma.",
+  "acceptance_criteria": [
+    "npm test passa",
+    "node src/cli.js automations mostra as 2 automações em linguagem simples",
+    "report --out recusa a pasta de outro negócio"
+  ],
+  "assignee": "director-automation",
+  "created_by": "chief-of-staff",
+  "status": "review",
+  "external_action": false,
+  "requires_approval": false,
+  "revisions": 2,
+  "quality_gate": "code-reviewer",
+  "quality_checks": [
+    {
+      "at": "2026-11-06T16:05:51.242Z",
+      "by": "code-reviewer",
+      "verdict": "pass",
+      "summary": "59 testes ok; sem bloqueantes; 2 importantes (--out amplo demais; doc gerado muda após aprovação), 5 sugestões; skills substituídas por revisão manual",
+      "report": {
+        "path": "office/businesses/cofind/deliverables/T-0005/code-review.md",
+        "sha256": "c287512f388e652a3394d209f115a958b803053878b485ca771317e77a9d390d"
+      },
+      "snapshot": "docs/AUTOMATIONS.md:d49a920142c71b5eba105fa27de4b45203879836b9c0195c6030c622af48e39c|src/lib/tasks.js:cce59651668368ce3e2f8ab31fd1d0fb2c899ea248c52eba0705dcf9ef573e47|src/tools/automations.js:b9801d92ecaddff23125f37704c8479b8ac175473a964bbb25ed97afd3004ab2|src/tools/status-report.js:2b7236ee048f3fb477775987e66b9bb0f3ffd3b55cb4d7e5169f2195b68ea45d|tests/automations.test.js:a24120eb61cdf1236fedc174a9c3e62754dd132e6d77b4a0bfdd89ba83c405fa|tests/status-report.test.js:34b5f10a688e44460ba26b2798c8e90f9af2ae2f904b7c97ee2675b77aba457e"
+    }
+  ],
+  "deliverables": [
+    {
+      "path": "src/tools/automations.js",
+      "sha256": "dc729424c94c7cee3fda1878e03f8b95b346368c16a931dfa29c075b0145279c",
+      "summary": "T-0005 rodada 1: src/tools/automations.js",
+      "by": "director-automation",
+      "at": "2026-11-06T16:06:59.506Z"
+    },
+    {
+      "path": "src/tools/status-report.js",
+      "sha256": "d5bb3df4938f1aa5191308956f7b1eed04e2308e7c1d14e530688ad3f30585a8",
+      "summary": "T-0005 rodada 1: src/tools/status-report.js",
+      "by": "director-automation",
+      "at": "2026-11-06T16:06:59.555Z"
+    },
+    {
+      "path": "src/lib/tasks.js",
+      "sha256": "706ffa08d356231cd6413493065332a6949b717b7b8c94c24031142b75fdff58",
+      "summary": "T-0005 rodada 1: src/lib/tasks.js",
+      "by": "director-automation",
+      "at": "2026-11-06T16:06:59.609Z"
+    },
+    {
+      "path": "tests/automations.test.js",
+      "sha256": "d662cf27efad3bfe05db4319fdea41a65476f39bcfb6204d73d20cea9f2f9f04",
+      "summary": "T-0005 rodada 1: tests/automations.test.js",
+      "by": "director-automation",
+      "at": "2026-11-06T16:06:59.690Z"
+    },
+    {
+      "path": "tests/status-report.test.js",
+      "sha256": "4dc22fa44767471b82ba136b41ed874f829b01284700ef5d7204832656de1824",
+      "summary": "T-0005 rodada 1: tests/status-report.test.js",
+      "by": "director-automation",
+      "at": "2026-11-06T16:06:59.724Z"
+    },
+    {
+      "path": "src/cli.js",
+      "sha256": "346f0f9b15ca560c465080f0e78409dcd37c6107639c931517705a26ed9c9e6a",
+      "summary": "ajuste do CoS no verify: versões substituídas",
+      "by": "director-automation",
+      "at": "2026-11-06T16:07:59.799Z"
+    },
+    {
+      "path": "tests/tasks.test.js",
+      "sha256": "7cedb4605ec4ec4002fe4110aa9ce562cdf751bdb78f9e3a03bd42d3c5b0989e",
+      "summary": "ajuste do CoS no verify: versões substituídas",
+      "by": "director-automation",
+      "at": "2026-11-06T16:07:59.833Z"
+    },
+    {
+      "path": "src/lib/verify.js",
+      "sha256": "4688fcc5d4f095db6beafeb0ba5a0aac8c744b6d461ae3ded25433593004ba55",
+      "summary": "ajuste do CoS no verify: versões substituídas",
+      "by": "director-automation",
+      "at": "2026-11-06T16:07:59.871Z"
+    }
+  ],
+  "thread": [
+    {
+      "at": "2026-11-06T16:06:21.826Z",
+      "from": "chief-of-staff",
+      "to": "director-automation",
+      "body": "Revisão do code-reviewer: pass, mas com um ponto importante que o CoS não aceita. Ajustes (rodada 1 de 2): (1) report --out só pode gravar em office/businesses/<o mesmo negócio>/deliverables/ ou em docs/ — nunca no registry, tasks/, runs.jsonl, approvals.jsonl, src/ ou .claude/; teste com '..' no caminho. (2) Em writeAutomations use isInside + OfficeError. (3) docs/AUTOMATIONS.md é uma VISÃO GERADA (muda sempre que o estado muda), não deve ser entrega com hash: adicione em src/lib/tasks.js uma função removeDeliverable (só o responsável, só com a tarefa em in_progress, registra evento no history) + comando 'deliver --remove', com teste, e remova docs/AUTOMATIONS.md das entregas de T-0005. (4) Sugestões rápidas: mover o comentário solto em tasks.js; teste de src/tools comparar nomes, não só contagem."
+    },
+    {
+      "at": "2026-11-06T16:07:46.718Z",
+      "from": "chief-of-staff",
+      "to": "director-automation",
+      "body": "Rodada 2 (apenas registro): o CoS alterou src/lib/verify.js, src/cli.js (saída do verify mostra versões substituídas) e tests/tasks.test.js (1 teste novo). Re-registre src/cli.js e tests/tasks.test.js e registre também src/lib/verify.js como entrega desta tarefa, para que o revisor confira tudo junto. Nenhuma outra mudança."
+    }
+  ],
+  "approval": null,
+  "history": [
+    {
+      "at": "2026-11-06T16:03:43.450Z",
+      "by": "chief-of-staff",
+      "type": "created",
+      "assignee": "director-automation"
+    },
+    {
+      "at": "2026-11-06T16:04:42.419Z",
+      "by": "director-automation",
+      "type": "status",
+      "from": "pending",
+      "to": "in_progress",
+      "note": ""
+    },
+    {
+      "at": "2026-11-06T16:04:42.490Z",
+      "by": "director-automation",
+      "type": "deliverable",
+      "path": "src/tools/automations.js"
+    },
+    {
+      "at": "2026-11-06T16:04:42.526Z",
+      "by": "director-automation",
+      "type": "deliverable",
+      "path": "src/tools/status-report.js"
+    },
+    {
+      "at": "2026-11-06T16:04:42.561Z",
+      "by": "director-automation",
+      "type": "deliverable",
+      "path": "src/lib/tasks.js"
+    },
+    {
+      "at": "2026-11-06T16:04:42.597Z",
+      "by": "director-automation",
+      "type": "deliverable",
+      "path": "tests/automations.test.js"
+    },
+    {
+      "at": "2026-11-06T16:04:42.630Z",
+      "by": "director-automation",
+      "type": "deliverable",
+      "path": "tests/status-report.test.js"
+    },
+    {
+      "at": "2026-11-06T16:04:42.667Z",
+      "by": "director-automation",
+      "type": "deliverable",
+      "path": "docs/AUTOMATIONS.md"
+    },
+    {
+      "at": "2026-11-06T16:04:42.735Z",
+      "by": "director-automation",
+      "type": "status",
+      "from": "in_progress",
+      "to": "review",
+      "note": ""
+    },
+    {
+      "at": "2026-11-06T16:05:51.243Z",
+      "by": "code-reviewer",
+      "type": "quality_check",
+      "verdict": "pass",
+      "report": "office/businesses/cofind/deliverables/T-0005/code-review.md"
+    },
+    {
+      "at": "2026-11-06T16:06:21.864Z",
+      "by": "chief-of-staff",
+      "type": "status",
+      "from": "review",
+      "to": "changes_requested",
+      "note": "rodada 1: restringir --out; docs gerados fora das entregas"
+    },
+    {
+      "at": "2026-11-06T16:06:34.988Z",
+      "by": "director-automation",
+      "type": "status",
+      "from": "changes_requested",
+      "to": "in_progress",
+      "note": ""
+    },
+    {
+      "at": "2026-11-06T16:06:59.506Z",
+      "by": "director-automation",
+      "type": "deliverable",
+      "path": "src/tools/automations.js"
+    },
+    {
+      "at": "2026-11-06T16:06:59.556Z",
+      "by": "director-automation",
+      "type": "deliverable",
+      "path": "src/tools/status-report.js"
+    },
+    {
+      "at": "2026-11-06T16:06:59.609Z",
+      "by": "director-automation",
+      "type": "deliverable",
+      "path": "src/lib/tasks.js"
+    },
+    {
+      "at": "2026-11-06T16:06:59.654Z",
+      "by": "director-automation",
+      "type": "deliverable",
+      "path": "src/cli.js"
+    },
+    {
+      "at": "2026-11-06T16:06:59.690Z",
+      "by": "director-automation",
+      "type": "deliverable",
+      "path": "tests/automations.test.js"
+    },
+    {
+      "at": "2026-11-06T16:06:59.724Z",
+      "by": "director-automation",
+      "type": "deliverable",
+      "path": "tests/status-report.test.js"
+    },
+    {
+      "at": "2026-11-06T16:06:59.759Z",
+      "by": "director-automation",
+      "type": "deliverable",
+      "path": "tests/tasks.test.js"
+    },
+    {
+      "at": "2026-11-06T16:06:59.793Z",
+      "by": "director-automation",
+      "type": "deliverable_removed",
+      "path": "docs/AUTOMATIONS.md"
+    },
+    {
+      "at": "2026-11-06T16:07:01.865Z",
+      "by": "director-automation",
+      "type": "status",
+      "from": "in_progress",
+      "to": "review",
+      "note": ""
+    },
+    {
+      "at": "2026-11-06T16:07:46.756Z",
+      "by": "chief-of-staff",
+      "type": "status",
+      "from": "review",
+      "to": "changes_requested",
+      "note": "rodada 2: re-registro após ajuste do CoS no verify"
+    },
+    {
+      "at": "2026-11-06T16:07:59.757Z",
+      "by": "director-automation",
+      "type": "status",
+      "from": "changes_requested",
+      "to": "in_progress",
+      "note": ""
+    },
+    {
+      "at": "2026-11-06T16:07:59.799Z",
+      "by": "director-automation",
+      "type": "deliverable",
+      "path": "src/cli.js"
+    },
+    {
+      "at": "2026-11-06T16:07:59.833Z",
+      "by": "director-automation",
+      "type": "deliverable",
+      "path": "tests/tasks.test.js"
+    },
+    {
+      "at": "2026-11-06T16:07:59.871Z",
+      "by": "director-automation",
+      "type": "deliverable",
+      "path": "src/lib/verify.js"
+    },
+    {
+      "at": "2026-11-06T16:08:00.256Z",
+      "by": "director-automation",
+      "type": "status",
+      "from": "in_progress",
+      "to": "review",
+      "note": ""
+    }
+  ],
+  "created_at": "2026-11-06T16:03:43.450Z",
+  "updated_at": "2026-11-06T16:08:00.256Z"
+}

@@ -8,6 +8,7 @@ import * as T from './lib/tasks.js';
 import { verifyBusiness } from './lib/verify.js';
 import { OfficeError } from './lib/paths.js';
 import { statusReport } from './tools/status-report.js';
+import { automationsMarkdown, writeAutomations } from './tools/automations.js';
 import { pathToFileURL } from 'node:url';
 
 const HELP = `AI Office CLI
@@ -24,6 +25,7 @@ const HELP = `AI Office CLI
   task note   --business <id> --id T-0001 --from <agente> [--to <agente>] --body <texto>
   inbox       --business <id> --agent <agente>       tarefas abertas de um agente
   deliver     --business <id> --id T-0001 --agent <a> --file <caminho> [--summary s]
+              deliver --remove  (tira uma entrega; só o responsável, tarefa em in_progress)
   run log     --business <id> --agent <a> --mode real|simulated --summary <s>
               [--task T-0001] [--action a]
   run list    --business <id>
@@ -37,6 +39,7 @@ const HELP = `AI Office CLI
   qa status   --business <id> --id T-0001            situação do controle de qualidade
   verify      --business <id>                        integridade e hashes
   report      --business <id> [--now <ISO>] [--out <arquivo>]   relatório semanal (somente leitura)
+  automations [--write]                      vitrine das automações (--write grava docs/AUTOMATIONS.md)
 
 Flags globais: --json (saída em JSON)
 `;
@@ -149,6 +152,10 @@ export function run(argv) {
     }
 
     case 'deliver': {
+      if (flags.remove) {
+        const d = T.removeDeliverable(biz(), req(flags, 'id'), { agent: req(flags, 'agent'), file: req(flags, 'file') });
+        return out(`entrega removida: ${d.path}`, d);
+      }
       const d = T.deliver(biz(), req(flags, 'id'), {
         agent: req(flags, 'agent'), file: req(flags, 'file'), summary: flags.summary,
       });
@@ -206,7 +213,8 @@ export function run(argv) {
     case 'verify': {
       const r = verifyBusiness(biz());
       const human = r.ok
-        ? `OK — ${r.tasks} tarefas verificadas, nenhum problema`
+        ? `OK — ${r.tasks} tarefas verificadas, nenhum problema` +
+          (r.superseded.length ? `\nversões substituídas (normal):\n- ${r.superseded.join('\n- ')}` : '')
         : `PROBLEMAS (${r.problems.length}):\n- ${r.problems.join('\n- ')}`;
       return out(human, r);
     }
@@ -214,6 +222,11 @@ export function run(argv) {
     case 'report': {
       const md = statusReport(biz(), { now: flags.now, out: flags.out });
       return flags.out ? `relatório gravado em ${flags.out}` : md;
+    }
+
+    case 'automations': {
+      if (flags.write) return `gravado em ${writeAutomations()}`;
+      return automationsMarkdown();
     }
 
     default:

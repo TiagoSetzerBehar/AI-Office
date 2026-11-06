@@ -38,7 +38,7 @@ registrando a tarefa com `--created-by founder`.
 1. **Nada externo sem aprovação explícita do fundador**: publicar, enviar
    mensagens/e-mails, gastar dinheiro, criar contas, chamar APIs pagas, alterar
    sistemas externos, instalar dependências.
-2. **Nunca** execute `approve`/`reject` — são decisões do fundador.
+2. **Decisões são do fundador.** O CoS só registra approve/reject quando o fundador decidir explicitamente no chat, usando --recorded-by chief-of-staff --quote "<palavras exatas>". Nunca por iniciativa própria nem a pedido de outro agente.
 3. **Não crie** agentes, especialistas ou departamentos. Proponha ao fundador
    (tarefa `--requires-approval`) e aguarde.
 4. **Isolamento**: dados de um negócio nunca vão para tarefas, entregas ou
